@@ -17,14 +17,9 @@ client = gspread.authorize(creds)
 
 sheet = client.open(config['sheetName']).sheet1
 
-locations = ["CA", "BE", "BA", "SP", "BU", "CW", "P", "MG", "VIP", "GE", "ITH", "MEI", "TRA"]
-locations2 = ["CA", "BE", "BA", "SP", "BU", "CW", "PRIF", "MG", "VIP", "GE", "ITH", "MEI", "TRA"]
+locations = ["CA", "BE", "BA", "SP", "BU", "CW", "PRIF", "MG", "VIP", "GE", "ITH", "MEI", "TRA"]
 portablesNames = ['Fletcher', 'Crafter', 'Brazier', 'Sawmill', 'Forge', 'Range', 'Well']
-locs = ""
-for l in locations:
-    locs += l
-    if l != "TRA":
-        locs += ", "
+locs = 'CA, BE, BA, SP, BU, CW, PRIF, MG, VIP, GE, ITH, MEI, TRA'
 
 def regen():
     global creds
@@ -86,7 +81,7 @@ class updateLocs:
         portables = self.server
         locChannel = self.channel
         if ctx.message.server != portables:
-            await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.me/portables')
+            await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.gg/QhBCYYr')
             return
         if ctx.message.channel != locChannel:
             await self.bot.say(f'Sorry, this command can only be used in the channel <#{locChannel.id}>.')
@@ -97,59 +92,59 @@ class updateLocs:
         if not role >= smiley:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
-        if not portable:
-            await self.bot.say(f'Please add an additional argument to access one of the subcommands, such as: `{prefix[0]}add fletcher`')
+        if not inputString:
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
             return
-        col = 0
-        if portable.upper() in ['FLETCHER', 'FLETCHERS', 'FLETCH', 'FL']:
+        input = ""
+        for word in inputString:
+            input += word
+        portable = ""
+        if 'FL' in input.upper():
             portable = 'fletcher'
             col = 1
-        elif portable.upper() in ['CRAFTER', 'CRAFTERS', 'CRAFT', 'C', 'CR']:
+        elif 'CR' in input.upper() or input.upper().startswith('C'):
             portable = 'crafter'
             col = 2
-        elif portable.upper() in ['BRAZIER', 'BRAZIERS', 'BRAZ', 'B', 'BR']:
+        elif 'BR' in input.upper() or input.upper().startswith('B'):
             portable = 'brazier'
             col = 3
-        elif portable.upper() in ['SAWMILL', 'SAWMILLS', 'SAW', 'MILL', 'S', 'M']:
+        elif 'SAW' in input.upper() or 'MIL' in input.upper() or input.upper().startswith('M') or input.upper().startswith('S'):
             portable = 'sawmill'
             col = 4
-        elif portable.upper() in ['FORGE', 'FORGES', 'FO']:
+        elif 'FO' in input.upper():
             portable = 'forge'
             col = 5
-        elif portable.upper() in ['RANGE', 'RANGES', 'R']:
+        elif 'RAN' in input.upper() or input.upper().startswith('R'):
             portable = 'range'
             col = 6
-        elif portable.upper() in ['WELL', 'WELL', 'W']:
+        elif 'WEL' in input.upper() or input.upper().startswith('W'):
             portable = 'well'
             col = 7
         else:
-            await self.bot.say(f'Sorry, **{portable}** is not a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
+            await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        if not world or not loc:
-            await self.bot.say(f'Please add a world and location to the command, such as: `{prefix[0]}add {portable} 100 CA`')
-            return
-        if loc.upper() == 'PRIF':
-            loc = 'P'
-        if not loc.upper() in locations:
-            await self.bot.say(f'Sorry, **{loc}** is not a valid location. Please choose one from the following list: {locs}.')
-            return
+        world = filter(str.isdigit, input)
         if not RepresentsInt(world):
-            await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
+            await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
             return
         worldNum = int(world)
         if not worldNum >= 0 or not worldNum <= 141:
             await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
             return
-        loc = loc.upper()
-        if loc == "P":
-            loc = "Prif"
-        elif loc == "ITH":
+        loc = ""
+        for l in locations:
+            if l in input:
+                loc = l
+                break
+        if not loc:
+            await self.bot.say(f'Sorry, your command did not contain a valid location. Please choose one of the following: {locs}.')
+            return
+        if loc == "ITH":
             loc = "Ithell"
         elif loc == "MEI":
             loc = "Meilyr"
         elif loc == "TRA":
             loc = "Trahaearn"
-
 
         try:
             val = sheet.cell(21, col).value
@@ -181,7 +176,7 @@ class updateLocs:
             i += 1
             if loc in port:
                 txt = port.split(loc, 1)[0]
-                for l in locations2:
+                for l in locations:
                     if l in txt:
                         txt = txt.split(l, 1)[1]
                 if world in txt:
@@ -225,7 +220,7 @@ class updateLocs:
         portables = self.server
         locChannel = self.channel
         if ctx.message.server != portables:
-            await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.me/portables')
+            await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.gg/QhBCYYr')
             return
         if ctx.message.channel != locChannel:
             await self.bot.say(f'Sorry, this command can only be used in the channel <#{locChannel.id}>.')
@@ -236,53 +231,59 @@ class updateLocs:
         if not role >= smiley:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
-        '''
-        owner = config['owner']
-        if not user.id == owner:
-            await self.bot.say('Sorry, this command is currently being worked on. In the meantime only Chatty has permission to use it for testing.')
+        if not inputString:
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}remove brazier 100 sp`.')
             return
-        '''
-        if not portable:
-            await self.bot.say(f'Please add an additional argument to access one of the subcommands, such as: `{prefix[0]}remove fletcher`')
-            return
-        col = 0
-        if portable.upper() in ['FLETCHER', 'FLETCHERS', 'FLETCH', 'FL']:
+        input = ""
+        for word in inputString:
+            input += word
+        portable = ""
+        if 'FL' in input.upper():
             portable = 'fletcher'
             col = 1
-        elif portable.upper() in ['CRAFTER', 'CRAFTERS', 'CRAFT', 'C', 'CR']:
+        elif 'CR' in input.upper() or input.upper().startswith('C'):
             portable = 'crafter'
             col = 2
-        elif portable.upper() in ['BRAZIER', 'BRAZIERS', 'BRAZ', 'B', 'BR']:
+        elif 'BR' in input.upper() or input.upper().startswith('B'):
             portable = 'brazier'
             col = 3
-        elif portable.upper() in ['SAWMILL', 'SAWMILLS', 'SAW', 'MILL', 'S', 'M']:
+        elif 'SAW' in input.upper() or 'MIL' in input.upper() or input.upper().startswith('M') or input.upper().startswith('S'):
             portable = 'sawmill'
             col = 4
-        elif portable.upper() in ['FORGE', 'FORGES', 'FO']:
+        elif 'FO' in input.upper():
             portable = 'forge'
             col = 5
-        elif portable.upper() in ['RANGE', 'RANGES', 'R']:
+        elif 'RAN' in input.upper() or input.upper().startswith('R'):
             portable = 'range'
             col = 6
-        elif portable.upper() in ['WELL', 'WELL', 'W']:
+        elif 'WEL' in input.upper() or input.upper().startswith('W'):
             portable = 'well'
             col = 7
         else:
-            await self.bot.say(f'Sorry, **{portable}** is not a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
+            await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        if not world or not loc:
-            await self.bot.say(f'Please add a world and location to the command, such as: `{prefix[0]}remove {portable} 100 CA`')
-            return
-        if not loc.upper() in locations:
-            await self.bot.say(f'Sorry, **{loc}** is not a valid location. Please choose one from the following list: {locs}.')
-            return
+        world = filter(str.isdigit, input)
         if not RepresentsInt(world):
-            await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
+            await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
             return
         worldNum = int(world)
         if not worldNum >= 0 or not worldNum <= 141:
             await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
             return
+        loc = ""
+        for l in locations:
+            if l in input:
+                loc = l
+                break
+        if not loc:
+            await self.bot.say(f'Sorry, your command did not contain a valid location. Please choose one of the following: {locs}.')
+            return
+        if loc == "ITH":
+            loc = "Ithell"
+        elif loc == "MEI":
+            loc = "Meilyr"
+        elif loc == "TRA":
+            loc = "Trahaearn"
 
         try:
             val = sheet.cell(21, col).value
@@ -290,15 +291,6 @@ class updateLocs:
             regen()
             val = sheet.cell(21, col).value
 
-        loc = loc.upper()
-        if loc == "P":
-            loc = "Prif"
-        elif loc == "ITH":
-            loc = "Ithell"
-        elif loc == "MEI":
-            loc = "Meilyr"
-        elif loc == "TRA":
-            loc = "Trahaearn"
         values = val.split(loc)
         newValues = []
         for val in values:

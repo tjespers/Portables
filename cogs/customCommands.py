@@ -84,7 +84,7 @@ class CustomCommands:
         Gives the link for the Portables discord server.
         '''
         addCommand()
-        await self.bot.say(f'https://discord.me/portables')
+        await self.bot.say(f'https://discord.gg/QhBCYYr')
         msg = ctx.message
         await self.bot.delete_message(msg)
         return
