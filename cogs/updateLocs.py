@@ -73,7 +73,7 @@ class updateLocs:
 
 
     @commands.command(pass_context=True)
-    async def add(self, ctx, portable="", world="", loc=""):
+    async def add(self, ctx, *inputString):
         """
         A command to add portable locations (Smiley+).
         """
@@ -212,7 +212,7 @@ class updateLocs:
         return
 
     @commands.command(pass_context=True)
-    async def remove(self, ctx, portable="", world="", loc=""):
+    async def remove(self, ctx, *inputString):
         """
         A command to remove portable locations (Smiley+).
         """
