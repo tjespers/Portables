@@ -222,5 +222,13 @@ class CustomCommands:
             await self.bot.remove_roles(user, role)
             await self.bot.say(f'{user.mention}, you left **{role.name}**.')
 
+    @commands.command(pass_context=True)
+    async def git(self, ctx):
+        '''
+        Returns the link to the GitHub repository of this bot.
+        '''
+        addCommand()
+        await self.bot.say('https://github.com/ChattyRS/Portables')
+
 def setup(bot):
     bot.add_cog(CustomCommands(bot))
