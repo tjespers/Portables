@@ -2,11 +2,12 @@
 
 This is the Discord bot written for the Portables Discord server by Chatty.
 
-### Python libraries used
+### Software used
 
 * [Discord.py](http://discordpy.readthedocs.io/en/latest/api.html)
 * [Tweepy](http://docs.tweepy.org/en/latest/)
 * [gspread](https://gspread.readthedocs.io/en/latest/)
+* [Template used](https://github.com/SourSpoon/Discord.py-Template)
 
 ## Authors
 
