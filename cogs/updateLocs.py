@@ -123,7 +123,7 @@ class updateLocs:
         else:
             await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        world = filter(str.isdigit, input)
+        world = ''.join(filter(str.isdigit, input))
         if not RepresentsInt(world):
             await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
             return
@@ -133,7 +133,7 @@ class updateLocs:
             return
         loc = ""
         for l in locations:
-            if l in input:
+            if l in input.upper():
                 loc = l
                 break
         if not loc:
@@ -262,7 +262,7 @@ class updateLocs:
         else:
             await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        world = filter(str.isdigit, input)
+        world = ''.join(filter(str.isdigit, input))
         if not RepresentsInt(world):
             await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
             return
@@ -272,7 +272,7 @@ class updateLocs:
             return
         loc = ""
         for l in locations:
-            if l in input:
+            if l in input.upper():
                 loc = l
                 break
         if not loc:
