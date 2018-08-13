@@ -240,7 +240,7 @@ class updateLocs:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
         if not inputString:
-            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}remove brazier 100 sp`.')
             return
         input = ""
         for word in inputString:
