@@ -39,6 +39,9 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
+def GE_there(s):
+    return min(s.count('GE') - s.count('RGE') > 0, s.count('GE') - s.count('NGE') > 0)
+
 class updateLocs:
     def __init__(self, bot):
         self.bot = bot
@@ -98,26 +101,27 @@ class updateLocs:
         input = ""
         for word in inputString:
             input += word
+        input = input.upper()
         portable = ""
-        if 'FL' in input.upper():
+        if 'FL' in input:
             portable = 'fletcher'
             col = 1
-        elif 'CR' in input.upper() or input.upper().startswith('C'):
+        elif 'CR' in input or (input.startswith('C') and not (input.startswith('CA') or input.startswith('CW'))):
             portable = 'crafter'
             col = 2
-        elif 'BR' in input.upper() or input.upper().startswith('B'):
+        elif 'BR' in input or (input.startswith('B') and not (input.startswith('BE') or input.startswith('BA') or input.startswith('BU'))):
             portable = 'brazier'
             col = 3
-        elif 'SAW' in input.upper() or 'MIL' in input.upper() or input.upper().startswith('M') or input.upper().startswith('S'):
+        elif 'SAW' in input or 'MIL' in input or (input.startswith('M') and not (input.startswith('MG') or input.startswith('MEI'))) or input.startswith('S'):
             portable = 'sawmill'
             col = 4
-        elif 'FO' in input.upper():
+        elif 'FO' in input:
             portable = 'forge'
             col = 5
-        elif 'RAN' in input.upper() or input.upper().startswith('R'):
+        elif 'RAN' in input or input.startswith('R'):
             portable = 'range'
             col = 6
-        elif 'WEL' in input.upper() or input.upper().startswith('W'):
+        elif 'WEL' in input or input.startswith('W'):
             portable = 'well'
             col = 7
         else:
@@ -133,7 +137,11 @@ class updateLocs:
             return
         loc = ""
         for l in locations:
-            if l in input.upper():
+            if l == 'GE':
+                if GE_there(input):
+                    loc = l
+                    break
+            elif l in input:
                 loc = l
                 break
         if not loc:
@@ -232,31 +240,32 @@ class updateLocs:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
         if not inputString:
-            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}remove brazier 100 sp`.')
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
             return
         input = ""
         for word in inputString:
             input += word
+        input = input.upper()
         portable = ""
-        if 'FL' in input.upper():
+        if 'FL' in input:
             portable = 'fletcher'
             col = 1
-        elif 'CR' in input.upper() or input.upper().startswith('C'):
+        elif 'CR' in input or (input.startswith('C') and not (input.startswith('CA') or input.startswith('CW'))):
             portable = 'crafter'
             col = 2
-        elif 'BR' in input.upper() or input.upper().startswith('B'):
+        elif 'BR' in input or (input.startswith('B') and not (input.startswith('BE') or input.startswith('BA') or input.startswith('BU'))):
             portable = 'brazier'
             col = 3
-        elif 'SAW' in input.upper() or 'MIL' in input.upper() or input.upper().startswith('M') or input.upper().startswith('S'):
+        elif 'SAW' in input or 'MIL' in input or (input.startswith('M') and not (input.startswith('MG') or input.startswith('MEI'))) or input.startswith('S'):
             portable = 'sawmill'
             col = 4
-        elif 'FO' in input.upper():
+        elif 'FO' in input:
             portable = 'forge'
             col = 5
-        elif 'RAN' in input.upper() or input.upper().startswith('R'):
+        elif 'RAN' in input or input.startswith('R'):
             portable = 'range'
             col = 6
-        elif 'WEL' in input.upper() or input.upper().startswith('W'):
+        elif 'WEL' in input or input.startswith('W'):
             portable = 'well'
             col = 7
         else:
@@ -272,7 +281,11 @@ class updateLocs:
             return
         loc = ""
         for l in locations:
-            if l in input.upper():
+            if l == 'GE':
+                if GE_there(input):
+                    loc = l
+                    break
+            elif l in input:
                 loc = l
                 break
         if not loc:
