@@ -8,4 +8,6 @@ for /f "skip=3 tokens=2 delims= " %%a in ('tasklist /fi "imagename eq cmd.exe"')
 )
 
 cd %~dp0
+:loop
 python main.py
+goto loop
