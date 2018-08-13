@@ -153,6 +153,7 @@ class Bot(commands.Bot):
                 print(f'Failed to load extension: {error}')
                 msg += f'Failed to load extension: {error}\n'
         print('-' * 10)
+        logging.info(msg)
         await self.send_message(channel, msg)
 
     async def on_ready(self):
@@ -170,6 +171,7 @@ class Bot(commands.Bot):
                f'Time: {str(self.start_time)} UTC')
         print(msg)
         print('-' * 10)
+        logging.info(msg)
         await self.send_message(channel, msg)
         auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
         auth.set_access_token(config['access_token_key'], config['access_token_secret'])
@@ -179,6 +181,7 @@ class Bot(commands.Bot):
                f'Using tweepy version: {tweepy.__version__}')
         print(msg)
         print('-' * 10)
+        logging.info(msg)
         await self.send_message(channel, msg)
         for chan in self.get_server(config['portablesServer']).channels:
             async for m in self.logs_from(chan):
@@ -186,6 +189,7 @@ class Bot(commands.Bot):
         msg = f'Loaded old messages'
         print(msg)
         print('-' * 10)
+        logging.info(msg)
         await self.send_message(channel, msg)
         self.loop.create_task(self.role_setup())
         self.loop.create_task(self.notify(api))
@@ -236,6 +240,7 @@ class Bot(commands.Bot):
         print(msg)
         print('-' * 10)
         logChannel = self.get_channel(config['logsChannel'])
+        logging.info(msg)
         await self.send_message(logChannel, msg)
 
 
@@ -336,6 +341,7 @@ class Bot(commands.Bot):
                             notifiedThisHourHappyHour = True
                             break
             msg = f'Now sending notifications in #{channel.name} on server {channel.server}'
+            logging.info(msg)
             print(msg)
             print('-' * 10)
             logChannel = self.get_channel(config['logsChannel'])
@@ -426,6 +432,7 @@ class Bot(commands.Bot):
                 await asyncio.sleep(10)
         except Exception as e:
             error = f'Encountered the following error in notification loop:\n{type(e).__name__} : {e}\nRestarting...'
+            logging.critical(error)
             print(error)
             channel = self.get_channel(config['logsChannel'])
             await self.send_message(channel, error)
@@ -434,7 +441,7 @@ class Bot(commands.Bot):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='data/log.txt', level=logging.INFO)
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(run())
