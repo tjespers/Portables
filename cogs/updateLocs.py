@@ -347,7 +347,10 @@ class updateLocs:
         newValues = []
         for value in values:
             if loc in value:
-                value = value.replace(world, "")
+                value = " " + value
+                value = value.replace(" "+world+" ", "")
+                value = value.replace(" "+world+"*", "")
+                value = value.replace(" "+world+",", "")
                 value = value.replace(", *", "")
                 value = value.replace(",  ", " ")
                 value = value.replace(", ,", ",")
