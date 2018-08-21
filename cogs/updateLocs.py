@@ -113,6 +113,16 @@ def addPort(world, loc, ports):
     ports.append([[world], loc])
     return ports
 
+def removePort(world, loc, ports):
+    for i, port in enumerate(ports):
+        if port[1] == loc:
+            if world in ports[i][0]:
+                ports[i][0].remove(world)
+                if not ports[i][0]:
+                    del ports[i]
+                return ports
+    return [[[-1]]]
+
 def format(ports):
     txt = ""
     f2pPorts = []
@@ -440,12 +450,6 @@ class updateLocs:
         if not loc:
             await self.bot.say(f'Sorry, your command did not contain a valid location. Please choose one of the following: {locs}.')
             return
-        if loc == "ITH":
-            loc = "Ithell"
-        elif loc == "MEI":
-            loc = "Meilyr"
-        elif loc == "TRA":
-            loc = "Trahaearn"
 
         try:
             val = sheet.cell(21, col).value
@@ -453,75 +457,27 @@ class updateLocs:
             regen()
             val = sheet.cell(21, col).value
 
-        values = val.split(loc)
-        newValues = []
-        for val in values:
-            val = val.replace(loc, '')
-            if val != values[len(values)-1]:
-                val += loc
-            newValues.append(val)
-        values = newValues
-        newValues = []
-        if (len(values) == 1 or (len(values) == 2 and not values[len(values)-1])) and not (world in values[0] and loc in values[0]):
+        ports = getPorts(val)
+        newPorts = removePort(int(world), loc, ports)
+        if newPorts[0][0][0] == -1:
             if not val:
                 val = f'N/A'
             await self.bot.say(f'Sorry, I could not find the location that you are trying to remove: **{world} {loc}**. The current locations are: **{val}**.')
             return
-        else:
-            for val in values:
-                val = val.replace(loc, '')
-                newValues.append(val)
-            values = newValues
-            newValues = []
-            for value in values:
-                if value != values[len(values)-1]:
-                    preVal = ""
-                    maxLetter = -1
-                    length = 0
-                    for l in locations:
-                        index = value.rfind(l)
-                        if index > maxLetter:
-                            maxLetter = index
-                            length = len(l)
-                    if maxLetter != -1:
-                        preVal = value[:maxLetter+length]
-                        value = value[maxLetter+length:]
-                    value += loc
-                    if preVal:
-                        newValues.append(preVal)
-                    newValues.append(value)
-                else:
-                    newValues.append(value)
-        values = newValues
-        newValues = []
-        for value in values:
-            if loc in value:
-                value = " " + value
-                value = value.replace(" "+world+" ", "")
-                value = value.replace(" "+world+"*", "")
-                value = value.replace(" "+world+",", "")
-                value = value.replace(", *", "")
-                value = value.replace(",  ", " ")
-                value = value.replace(", ,", ",")
-                value = '~' + value
-                value = value.replace("~, ", "")
-                value = value.replace("~", "")
-                newValues.append(value)
-            else:
-                newValues.append(value)
-        values = newValues
-        newVal = ""
-        for value in values:
-            if hasNumbers(value):
-                newVal += value
+
+        newVal = format(newPorts)
+
+        timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
         try:
             sheet.update_cell(21, col, newVal)
-            sheet.update_cell(18, 8, '1')
+            sheet.update_cell(31+col, 2, newVal)
+            sheet.update_cell(22, 3, timestamp)
         except:
             regen()
             sheet.update_cell(21, col, newVal)
-            sheet.update_cell(18, 8, '1')
+            sheet.update_cell(31+col, 2, newVal)
+            sheet.update_cell(22, 3, timestamp)
 
         await self.bot.say(f'The **{portable}** location **{world} {loc}** has been removed from the Portables sheet.')
         return
