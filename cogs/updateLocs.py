@@ -121,7 +121,7 @@ def removePort(world, loc, ports):
                 if not ports[i][0]:
                     del ports[i]
                 return ports
-    return [[[-1]]]
+    return None
 
 def format(ports):
     txt = ""
@@ -459,7 +459,8 @@ class updateLocs:
 
         ports = getPorts(val)
         newPorts = removePort(int(world), loc, ports)
-        if newPorts[0][0][0] == -1:
+
+        if newPorts is None:
             if not val:
                 val = f'N/A'
             await self.bot.say(f'Sorry, I could not find the location that you are trying to remove: **{world} {loc}**. The current locations are: **{val}**.')
