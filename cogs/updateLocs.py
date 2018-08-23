@@ -250,6 +250,7 @@ class updateLocs:
         for word in inputString:
             input += word
         input = input.upper()
+        input = input.replace('F2P', '').strip()
         portable = ""
         if 'FL' in input:
             portable = 'fletcher'
@@ -405,6 +406,7 @@ class updateLocs:
         for word in inputString:
             input += word
         input = input.upper()
+        input = input.replace('F2P', '').strip()
         portable = ""
         if 'FL' in input:
             portable = 'fletcher'
