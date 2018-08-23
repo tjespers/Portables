@@ -9,6 +9,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import re
 from main import addCommand
 from datetime import datetime, timedelta, timezone
+import copy
 
 config = config_load()
 
@@ -75,19 +76,19 @@ def getPorts(input):
         worlds = [int(s) for s in re.findall(r'\d+', substring)] # https://stackoverflow.com/questions/4289331/python-extract-numbers-from-a-string
         ports.append([worlds, indices[i][0]])
 
-    portsCopy = ports
+    portsCopy = copy.deepcopy(ports)
     duplicates = []
     # Add worlds from duplicate locations to the first occurrence of the location
-    for i, port1 in enumerate(ports):
+    for i, port1 in enumerate(portsCopy):
         loc1 = port1[1]
-        for j, port2 in enumerate(ports):
+        for j, port2 in enumerate(portsCopy):
             if j <= i:
                 continue
             loc2 = port2[1]
             if loc1 == loc2:
                 for world in portsCopy[j][0]:
                     portsCopy[i][0].append(world)
-                if not i+j in duplicates:
+                if not j in duplicates:
                     duplicates.append(i+j)
 
     # Delete duplicate locations
@@ -103,14 +104,23 @@ def getPorts(input):
 
 
 def addPort(world, loc, ports):
-    for i, port in enumerate(ports):
+    newPorts = ports.copy()
+    for i, port in enumerate(newPorts):
         if port[1] == loc:
-            if world in ports[i][0]:
-                return []
-            ports[i][0].append(world)
-            ports[i][0].sort()
-            return ports
-    ports.append([[world], loc])
+            if world in newPorts[i][0]:
+                return newPorts
+            newPorts[i][0].append(world)
+            newPorts[i][0].sort()
+            return newPorts
+    newPorts.append([[world], loc])
+    return newPorts
+
+def addPorts(current, new):
+    ports = current.copy()
+    for port in new:
+        loc = port[1]
+        for world in port[0]:
+            ports = addPort(world, loc, ports)
     return ports
 
 def removePort(world, loc, ports):
@@ -224,17 +234,18 @@ class updateLocs:
 
 
     @commands.command(pass_context=True)
-    async def add(self, ctx, *inputString):
+    async def add(self, ctx):
         """
         Add portable locations (Smiley+).
         """
         addCommand()
         portables = self.server
         locChannel = self.channel
-        if ctx.message.server != portables:
+        msg = ctx.message
+        if msg.server != portables:
             await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.gg/QhBCYYr')
             return
-        if ctx.message.channel != locChannel:
+        if msg.channel != locChannel:
             await self.bot.say(f'Sorry, this command can only be used in the channel <#{locChannel.id}>.')
             return
         smiley = self.smiley
@@ -243,14 +254,13 @@ class updateLocs:
         if not role >= smiley:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
-        if not inputString:
-            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
-            return
-        input = ""
-        for word in inputString:
-            input += word
+        input = msg.content
+        input = input.replace(f'{prefix[0]}add', '').strip()
         input = input.upper()
         input = input.replace('F2P', '').strip()
+        if not input:
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
+            return
         portable = ""
         if 'FL' in input:
             portable = 'fletcher'
@@ -276,42 +286,13 @@ class updateLocs:
         else:
             await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        world = ''.join(filter(str.isdigit, input))
-        if not RepresentsInt(world):
-            await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
-            return
-        worldNum = int(world)
-        if not worldNum >= 0 or not worldNum <= highestWorld:
-            await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
-            return
-        if int(world) in forbiddenWorlds:
-            await self.bot.say(f'Sorry, world **{world}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.')
-            return
-        loc = ""
-        for l in locations:
-            if l == 'GE':
-                if GE_there(input):
-                    loc = l
-                    break
-            elif l in input:
-                loc = l
-                break
-        if not loc:
-            await self.bot.say(f'Sorry, your command did not contain a valid location. Please choose one of the following: {locs}.')
-            return
-        for forbiddenLoc in forbiddenLocs:
-            if int(world) == forbiddenLoc[0] and loc == forbiddenLoc[1]:
-                await self.bot.say(f'Sorry, **{world} {loc}** is a forbidden location.')
-                return
-        if loc == 'GE' and int(world) not in f2pWorlds:
-            await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
-            return
+        input = input.replace('FORGE', '')
+        input = input.replace('RANGE', '')
+        newPorts = getPorts(input)
 
-        try:
-            val = sheet.cell(21, col).value
-        except:
-            regen()
-            val = sheet.cell(21, col).value
+        if not newPorts:
+            await self.bot.say(f'Sorry, your command did not contain any valid locations.')
+            return
 
         cols = [1, 2, 3, 4, 5, 6, 7]
         ports = []
@@ -330,39 +311,59 @@ class updateLocs:
                     continue
                 else:
                     ports.append(sheet.cell(21, c).value.upper())
-        portNames = []
-        count = 0
-        i = 0
-        for port in ports:
-            i += 1
-            if loc in port:
-                txt = port.split(loc, 1)[0]
-                for l in locations:
-                    if l in txt:
-                        txt = txt.split(l, 1)[1]
-                if world in txt:
-                    portNames.append(portablesNames[i-1])
-                    count += 1
 
-        if count >= 3:
-            msgPorts = ""
-            i = 0
-            for p in portNames:
-                i += 1
-                msgPorts += '**' + p + '**'
-                if i < len(portNames):
-                    msgPorts += ", "
-                    if i == len(portNames) - 1:
-                        msgPorts += "and "
-            await self.bot.say(f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{world} {loc}** already has a {msgPorts}.')
-            return
+        for port in newPorts:
+            loc = port[1]
+            for world in port[0]:
+                if not world >= 0 or not world <= highestWorld:
+                    await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.')
+                    return
+                if world in forbiddenWorlds:
+                    await self.bot.say(f'Sorry, world **{str(world)}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.')
+                    return
+                for forbiddenLoc in forbiddenLocs:
+                    if world == forbiddenLoc[0] and loc == forbiddenLoc[1]:
+                        await self.bot.say(f'Sorry, **{str(world)} {loc}** is a forbidden location.')
+                        return
+                if loc == 'GE' and world not in f2pWorlds:
+                    await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
+                    return
+                portNames = []
+                count = 0
+                i = 0
+                for p in ports:
+                    i += 1
+                    if loc in p:
+                        txt = p.split(loc, 1)[0]
+                        for l in locations:
+                            if l in txt:
+                                txt = txt.split(l, 1)[1]
+                        if str(world) in txt:
+                            portNames.append(portablesNames[i-1])
+                            count += 1
+                if count >= 3:
+                    msgPorts = ""
+                    i = 0
+                    for p in portNames:
+                        i += 1
+                        msgPorts += '**' + p + '**'
+                        if i < len(portNames):
+                            msgPorts += ", "
+                            if i == len(portNames) - 1:
+                                msgPorts += "and "
+                    await self.bot.say(f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{str(world)} {loc}** already has a {msgPorts}.')
+                    return
 
-        ports = getPorts(val)
-        newPorts = addPort(int(world), loc, ports)
-        if not newPorts:
-            await self.bot.say(f'The **{portable}** at  **{world} {loc}** is already on the sheets.')
-            return
-        newVal = format(newPorts)
+        try:
+            val = sheet.cell(21, col).value
+        except:
+            regen()
+            val = sheet.cell(21, col).value
+
+        newPortsText = format(newPorts.copy()).replace('*', '\*')
+        currentPorts = getPorts(val)
+        sumPorts = addPorts(currentPorts, newPorts)
+        newVal = format(sumPorts)
 
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
@@ -391,7 +392,7 @@ class updateLocs:
                 sheet.update_cell(22, 5, name)
                 sheet.update_cell(39, 2, name)
 
-        await self.bot.say(f'The **{portable}** location **{world} {loc}** has been added to the Portables sheet.')
+        await self.bot.say(f'The **{portable}** location\(s\) **{newPortsText}** have been added to the Portables sheet.')
         return
 
     @commands.command(pass_context=True)

@@ -230,7 +230,7 @@ class CustomCommands:
         msg = ctx.message
         user = msg.author
         input = msg.content
-        input = input.replace('-setnick', '')
+        input = input.replace(f'{prefix[0]}setnick', '')
         input = input.replace('\n', '')
         input = input.replace('\t', '')
         input = input.replace('\r', '')
