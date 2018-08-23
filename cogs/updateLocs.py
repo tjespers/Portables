@@ -155,7 +155,9 @@ def format(ports):
             f2pPorts.append([f2pLocs, loc])
 
     if f2pPorts:
-        txt += ' | F2P '
+        if txt:
+            txt += ' | '
+        txt += 'F2P '
         for i, port in enumerate(f2pPorts):
             worlds = port[0]
             loc = port[1]
@@ -196,14 +198,12 @@ class updateLocs:
         server = bot.get_server(config['portablesServer'])
         channel = bot.get_channel(config['locationChannel'])
         roles = server.roles
-        smiley = roles[0]
-        for role in roles:
-            if role.name == "Smiley":
-                smiley = role
-                break
+        smiley = discord.utils.get(roles, id=config['smileyRole'])
+        rank = discord.utils.get(roles, id=config['rankRole'])
         self.server = server
         self.channel = channel
         self.smiley = smiley
+        self.rank = rank
 
     @commands.command(pass_context=True)
     async def regenLocs(self, ctx):
@@ -366,15 +366,30 @@ class updateLocs:
 
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
+        isRank = False
+        if self.rank in user.roles:
+            isRank = True
+            name = user.nick
+            if not name:
+                name = user.name
+            name = re.sub('[^A-z0-9 -]', '', name)
+            name = name.replace('`', '')
+
         try:
             sheet.update_cell(21, col, newVal)
             sheet.update_cell(31+col, 2, newVal)
             sheet.update_cell(22, 3, timestamp)
+            if isRank:
+                sheet.update_cell(22, 5, name)
+                sheet.update_cell(39, 2, name)
         except:
             regen()
             sheet.update_cell(21, col, newVal)
             sheet.update_cell(31+col, 2, newVal)
             sheet.update_cell(22, 3, timestamp)
+            if isRank:
+                sheet.update_cell(22, 5, name)
+                sheet.update_cell(39, 2, name)
 
         await self.bot.say(f'The **{portable}** location **{world} {loc}** has been added to the Portables sheet.')
         return
@@ -472,15 +487,30 @@ class updateLocs:
 
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
+        isRank = False
+        if self.rank in user.roles:
+            isRank = True
+            name = user.nick
+            if not name:
+                name = user.name
+            name = re.sub('[^A-z0-9 -]', '', name)
+            name = name.replace('`', '')
+
         try:
             sheet.update_cell(21, col, newVal)
             sheet.update_cell(31+col, 2, newVal)
             sheet.update_cell(22, 3, timestamp)
+            if isRank:
+                sheet.update_cell(22, 5, name)
+                sheet.update_cell(39, 2, name)
         except:
             regen()
             sheet.update_cell(21, col, newVal)
             sheet.update_cell(31+col, 2, newVal)
             sheet.update_cell(22, 3, timestamp)
+            if isRank:
+                sheet.update_cell(22, 5, name)
+                sheet.update_cell(39, 2, name)
 
         await self.bot.say(f'The **{portable}** location **{world} {loc}** has been removed from the Portables sheet.')
         return
