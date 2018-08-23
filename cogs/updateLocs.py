@@ -437,7 +437,7 @@ class updateLocs:
             await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
             return
         worldNum = int(world)
-        if not worldNum >= 0 or not worldNum <= 141:
+        if not worldNum >= 0 or not worldNum <= highestWorld:
             await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
             return
         loc = ""
