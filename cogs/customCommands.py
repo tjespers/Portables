@@ -223,6 +223,34 @@ class CustomCommands:
             await self.bot.say(f'{user.mention}, you left **{role.name}**.')
 
     @commands.command(pass_context=True)
+    async def setnick(self, ctx):
+        '''
+        Changes the user's nickname.
+        '''
+        msg = ctx.message
+        user = msg.author
+        input = msg.content
+        input = input.replace('-setnick', '')
+        input = input.replace('\n', '')
+        input = input.replace('\t', '')
+        input = input.replace('\r', '')
+        input = input.replace('\f', '')
+        input = input.replace('\v', '')
+        input = input.replace('_', ' ')
+        input = input.strip()
+        if len(input) > 12 or not input:
+            await self.bot.say('Sorry, you can only change your nickname to a valid RSN. RSNs have a maximum length of 12 characters and cannot be empty.')
+            return
+        if re.match('^[A-z0-9 -]+$', input) is None:
+            await self.bot.say('Sorry, you can only change your nickname to a valid RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            return
+        try:
+            await self.bot.change_nickname(user, input)
+            await self.bot.say(f'Your nickname has been changed to **{input}**.')
+        except discord.Forbidden:
+            await self.bot.say('Sorry, I do not have permission to change your nickname.')
+
+    @commands.command(pass_context=True)
     async def git(self, ctx):
         '''
         Returns the link to the GitHub repository of this bot.
