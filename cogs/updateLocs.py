@@ -104,7 +104,7 @@ def getPorts(input):
 
 
 def addPort(world, loc, ports):
-    newPorts = ports.copy()
+    newPorts = copy.deepcopy(ports)
     for i, port in enumerate(newPorts):
         if port[1] == loc:
             if world in newPorts[i][0]:
@@ -116,7 +116,7 @@ def addPort(world, loc, ports):
     return newPorts
 
 def addPorts(current, new):
-    ports = current.copy()
+    ports = copy.deepcopy(current)
     for port in new:
         loc = port[1]
         for world in port[0]:
@@ -124,14 +124,23 @@ def addPorts(current, new):
     return ports
 
 def removePort(world, loc, ports):
-    for i, port in enumerate(ports):
+    newPorts = copy.deepcopy(ports)
+    for i, port in enumerate(newPorts):
         if port[1] == loc:
-            if world in ports[i][0]:
-                ports[i][0].remove(world)
-                if not ports[i][0]:
-                    del ports[i]
-                return ports
-    return None
+            if world in newPorts[i][0]:
+                newPorts[i][0].remove(world)
+                if not newPorts[i][0]:
+                    del newPorts[i]
+                return newPorts
+    return newPorts
+
+def removePorts(current, old):
+    ports = copy.deepcopy(current)
+    for port in old:
+        loc = port[1]
+        for world in port[0]:
+            ports = removePort(world, loc, ports)
+    return ports
 
 def format(ports):
     txt = ""
@@ -360,7 +369,7 @@ class updateLocs:
             regen()
             val = sheet.cell(21, col).value
 
-        newPortsText = format(newPorts.copy()).replace('*', '\*')
+        newPortsText = format(newPorts).replace('*', '\*')
         currentPorts = getPorts(val)
         sumPorts = addPorts(currentPorts, newPorts)
         newVal = format(sumPorts)
@@ -396,17 +405,18 @@ class updateLocs:
         return
 
     @commands.command(pass_context=True)
-    async def remove(self, ctx, *inputString):
+    async def remove(self, ctx):
         """
         Remove portable locations (Smiley+).
         """
         addCommand()
         portables = self.server
         locChannel = self.channel
-        if ctx.message.server != portables:
+        msg = ctx.message
+        if msg.server != portables:
             await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.gg/QhBCYYr')
             return
-        if ctx.message.channel != locChannel:
+        if msg.channel != locChannel:
             await self.bot.say(f'Sorry, this command can only be used in the channel <#{locChannel.id}>.')
             return
         smiley = self.smiley
@@ -415,14 +425,13 @@ class updateLocs:
         if not role >= smiley:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
-        if not inputString:
-            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}remove brazier 100 sp`.')
-            return
-        input = ""
-        for word in inputString:
-            input += word
+        input = msg.content
+        input = input.replace(f'{prefix[0]}add', '').strip()
         input = input.upper()
         input = input.replace('F2P', '').strip()
+        if not input:
+            await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}remove brazier 100 sp`.')
+            return
         portable = ""
         if 'FL' in input:
             portable = 'fletcher'
@@ -448,26 +457,30 @@ class updateLocs:
         else:
             await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        world = ''.join(filter(str.isdigit, input))
-        if not RepresentsInt(world):
-            await self.bot.say(f'Sorry, your command did not contain a valid world. Please enter a number between 1 and 141.')
+        input = input.replace('FORGE', '')
+        input = input.replace('RANGE', '')
+        oldPorts = getPorts(input)
+
+        if not oldPorts:
+            await self.bot.say(f'Sorry, your command did not contain any valid locations.')
             return
-        worldNum = int(world)
-        if not worldNum >= 0 or not worldNum <= highestWorld:
-            await self.bot.say(f'Sorry, **{world}** is not a valid world. Please enter a number between 1 and 141.')
-            return
-        loc = ""
-        for l in locations:
-            if l == 'GE':
-                if GE_there(input):
-                    loc = l
-                    break
-            elif l in input:
-                loc = l
-                break
-        if not loc:
-            await self.bot.say(f'Sorry, your command did not contain a valid location. Please choose one of the following: {locs}.')
-            return
+
+        for port in oldPorts:
+            loc = port[1]
+            for world in port[0]:
+                if not world >= 0 or not world <= highestWorld:
+                    await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.')
+                    return
+                if world in forbiddenWorlds:
+                    await self.bot.say(f'Sorry, world **{str(world)}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.')
+                    return
+                for forbiddenLoc in forbiddenLocs:
+                    if world == forbiddenLoc[0] and loc == forbiddenLoc[1]:
+                        await self.bot.say(f'Sorry, **{str(world)} {loc}** is a forbidden location.')
+                        return
+                if loc == 'GE' and world not in f2pWorlds:
+                    await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
+                    return
 
         try:
             val = sheet.cell(21, col).value
@@ -475,16 +488,10 @@ class updateLocs:
             regen()
             val = sheet.cell(21, col).value
 
-        ports = getPorts(val)
-        newPorts = removePort(int(world), loc, ports)
-
-        if newPorts is None:
-            if not val:
-                val = f'N/A'
-            await self.bot.say(f'Sorry, I could not find the location that you are trying to remove: **{world} {loc}**. The current locations are: **{val}**.')
-            return
-
-        newVal = format(newPorts)
+        oldPortsText = format(oldPorts).replace('*', '\*')
+        currentPorts = getPorts(val)
+        difPorts = removePorts(currentPorts, oldPorts)
+        newVal = format(difPorts)
 
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
@@ -513,7 +520,7 @@ class updateLocs:
                 sheet.update_cell(22, 5, name)
                 sheet.update_cell(39, 2, name)
 
-        await self.bot.say(f'The **{portable}** location **{world} {loc}** has been removed from the Portables sheet.')
+        await self.bot.say(f'The **{portable}** location\(s\) **{oldPortsText}** have been removed from the Portables sheet.')
         return
 
 def setup(bot):
