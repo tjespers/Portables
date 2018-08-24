@@ -52,7 +52,7 @@ def GE_there(s):
 
 def getPorts(input):
 
-    input = input.upper()
+    input = input.upper().replace('F2P', '').strip()
 
     # Get indices of all occurrences of locations
     indices = []
@@ -303,23 +303,9 @@ class updateLocs:
             await self.bot.say(f'Sorry, your command did not contain any valid locations.')
             return
 
-        cols = [1, 2, 3, 4, 5, 6, 7]
-        ports = []
-        try:
-            for c in cols:
-                if c == col:
-                    ports.append("")
-                    continue
-                else:
-                    ports.append(sheet.cell(21, c).value.upper())
-        except:
-            regen()
-            for c in cols:
-                if c == col:
-                    ports.append("")
-                    continue
-                else:
-                    ports.append(sheet.cell(21, c).value.upper())
+        ports = sheet.row_values(21)[:7]
+        val = ports[col-1]
+        ports[col] = ""
 
         for port in newPorts:
             loc = port[1]
@@ -362,12 +348,6 @@ class updateLocs:
                                 msgPorts += "and "
                     await self.bot.say(f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{str(world)} {loc}** already has a {msgPorts}.')
                     return
-
-        try:
-            val = sheet.cell(21, col).value
-        except:
-            regen()
-            val = sheet.cell(21, col).value
 
         newPortsText = format(newPorts).replace('*', '\*')
         currentPorts = getPorts(val)
