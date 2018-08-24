@@ -210,7 +210,6 @@ def format(ports):
     return txt
 
 
-
 class updateLocs:
     def __init__(self, bot):
         self.bot = bot
@@ -263,13 +262,11 @@ class updateLocs:
         if not role >= smiley:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
-        input = msg.content
-        input = input.replace(f'{prefix[0]}add', '').strip()
-        input = input.upper()
-        input = input.replace('F2P', '').strip()
+        input = msg.content.upper().replace(f'{prefix[0]}ADD', '').replace('F2P', '').strip()
         if not input:
             await self.bot.say(f'Please add a portable, world, and location to your command. Example: `{prefix[0]}add brazier 100 sp`.')
             return
+
         portable = ""
         if 'FL' in input:
             portable = 'fletcher'
@@ -295,8 +292,7 @@ class updateLocs:
         else:
             await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
             return
-        input = input.replace('FORGE', '')
-        input = input.replace('RANGE', '')
+        input = input.replace('FORGE', '').replace('RANGE', '')
         newPorts = getPorts(input)
 
         if not newPorts:
@@ -362,8 +358,7 @@ class updateLocs:
             name = user.nick
             if not name:
                 name = user.name
-            name = re.sub('[^A-z0-9 -]', '', name)
-            name = name.replace('`', '')
+            name = re.sub('[^A-z0-9 -]', '', name).replace('`', '')
 
         try:
             sheet.update_cell(21, col, newVal)
