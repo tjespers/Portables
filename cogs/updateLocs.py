@@ -37,21 +37,7 @@ def regen():
     client = gspread.authorize(creds)
     sheet = client.open(config['sheetName']).sheet1
 
-def hasNumbers(inputString):
-    return bool(re.search(r'\d', inputString))
-
-def RepresentsInt(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-def GE_there(s):
-    return min(s.count('GE') - s.count('RGE') > 0, s.count('GE') - s.count('NGE') > 0)
-
 def getPorts(input):
-
     input = input.upper().replace('F2P', '').strip()
 
     # Get indices of all occurrences of locations
@@ -202,10 +188,7 @@ def format(ports):
     if not txt:
         return 'N/A'
 
-    txt.replace('PRIF', 'Prif')
-    txt.replace('ITH', 'Ithell')
-    txt.replace('MEI', 'Meilyr')
-    txt.replace('TRA', 'Trahaearn')
+    txt = txt.replace('PRIF', 'Prif').replace('ITH', 'Ithell').replace('MEI', 'Meilyr').replace('TRA', 'Trahaearn')
 
     return txt
 
@@ -299,9 +282,14 @@ class updateLocs:
             await self.bot.say(f'Sorry, your command did not contain any valid locations.')
             return
 
-        ports = sheet.row_values(21)[:7]
+        try:
+            ports = sheet.row_values(21)[:7]
+        except:
+            regen()
+            ports = sheet.row_values(21)[:7]
+        
         val = ports[col-1]
-        ports[col] = ""
+        ports[col-1] = ""
 
         for port in newPorts:
             loc = port[1]
