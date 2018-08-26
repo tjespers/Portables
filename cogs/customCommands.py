@@ -52,17 +52,11 @@ class CustomCommands:
         '''
         Pings the bot to check latency.
         '''
-        now = datetime.utcnow()
         addCommand()
-        msg = ctx.message
-        msg_time = msg.timestamp
-        dif = 0
-        if now > msg_time:
-            dif = now - msg_time
-        else:
-            dif = msg_time - now
-        time = pingToString(dif)
-        await self.bot.say(f'Pong! `{time}`')
+        before = datetime.utcnow()
+        msg = await self.bot.say(f'Pong!')
+        ping = pingToString(datetime.utcnow() - before)
+        await self.bot.edit_message(msg, f'Pong! `{ping}`')
         return
 
 

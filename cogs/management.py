@@ -57,13 +57,6 @@ class Management:
         time = now.replace(microsecond=0)
         time -= self.start_time
         time = timeDiffToString(time)
-        msg_time = ctx.message.timestamp
-        dif = 0
-        if now > msg_time:
-            dif = now - msg_time
-        else:
-            dif = msg_time - now
-        ping = pingToString(dif)
         cpuPercent = str(psutil.cpu_percent(interval=None))
         cpuFreq = psutil.cpu_freq()[0]
         ram = psutil.virtual_memory() # total, available, percent, used, free, active, inactive, buffers, cached, shared, slab
@@ -77,11 +70,15 @@ class Management:
         embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
         embed.add_field(name='CPU', value=f'{cpuPercent}% {int(cpuFreq)} MHz', inline=False)
         embed.add_field(name='RAM', value=f'{ramPercent}% {int(ramUsed/1000000)}/{int(ramTotal/1000000)} MB', inline=False)
-        embed.add_field(name='Ping', value=f'{ping}', inline=False)
+        embed.add_field(name='Ping', value=f'Calculating...', inline=False)
         embed.add_field(name='Running time', value=f'{time}', inline=False)
         embed.add_field(name='Commands', value=f'{getCommandsAnswered()} commands answered', inline=False)
         embed.add_field(name='Events', value=f'{getEventsLogged()} events logged', inline=False)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        before = datetime.utcnow()
+        msg = await self.bot.send_message(ctx.message.channel, embed=embed)
+        ping = pingToString(datetime.utcnow() - before)
+        embed.set_field_at(2, name='Ping', value=ping, inline=False)
+        await self.bot.edit_message(msg, embed=embed)
         return
 
     @commands.command(pass_context=True)
