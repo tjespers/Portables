@@ -173,31 +173,32 @@ class Logs:
                 return
             if after.server != self.server:
                 return
-            logEvent()
-            title = f'**Message Edited**'
-            colour = 0x00b2ff
-            timestamp = datetime.utcnow()
-            id = f'Message ID: {after.id}'
-            txt = (f'By: {member.mention} {member.name}#{member.discriminator}\n'
-                   f'In: {after.channel.mention}')
-            url = member.avatar_url
-            beforeContent = before.content
-            if not beforeContent:
-                beforeContent = 'N/A'
-            afterContent = after.content
-            if not afterContent:
-                afterContent = 'N/A'
-            if len(beforeContent) > 1000:
-                beforeContent = beforeContent[:1000] + '\n...'
-            if len(afterContent) > 1000:
-                afterContent = afterContent[:1000] + '\n...'
-            embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
-            embed.add_field(name='Before', value=beforeContent, inline=False)
-            embed.add_field(name='After', value=afterContent, inline=False)
-            embed.set_footer(text=id)
-            embed.set_thumbnail(url=url)
-            await self.bot.send_message(self.channel, embed=embed)
-            return
+            if after.content != before.content:
+                logEvent()
+                title = f'**Message Edited**'
+                colour = 0x00b2ff
+                timestamp = datetime.utcnow()
+                id = f'Message ID: {after.id}'
+                txt = (f'By: {member.mention} {member.name}#{member.discriminator}\n'
+                       f'In: {after.channel.mention}')
+                url = member.avatar_url
+                beforeContent = before.content
+                if not beforeContent:
+                    beforeContent = 'N/A'
+                afterContent = after.content
+                if not afterContent:
+                    afterContent = 'N/A'
+                if len(beforeContent) > 1000:
+                    beforeContent = beforeContent[:1000] + '\n...'
+                if len(afterContent) > 1000:
+                    afterContent = afterContent[:1000] + '\n...'
+                embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
+                embed.add_field(name='Before', value=beforeContent, inline=False)
+                embed.add_field(name='After', value=afterContent, inline=False)
+                embed.set_footer(text=id)
+                embed.set_thumbnail(url=url)
+                await self.bot.send_message(self.channel, embed=embed)
+                return
 
     async def on_channel_delete(self, channel):
         if channel.server != self.server:
