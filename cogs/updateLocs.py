@@ -389,7 +389,7 @@ class updateLocs:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
         input = msg.content
-        input = input.replace(f'{prefix[0]}add', '').strip()
+        input = input.replace(f'{prefix[0]}remove', '').strip()
         input = input.upper()
         input = input.replace('F2P', '').strip()
         if not input:
