@@ -359,6 +359,8 @@ class Bot(commands.Bot):
                         tweetTime = tweet.created_at
                         if now.day != tweetTime.day or now.hour != tweetTime.hour:
                             continue
+                        if '(, )' in html.unescape(tweet.full_text):
+                            break
                         await self.send_message(channel, config['msgMerchant'] + config['merchantRole'] + "\n" + html.unescape(tweet.full_text))
                         notifiedThisDayMerchant = True
                 if not notifiedThisHourVOS and now.minute <= 1:

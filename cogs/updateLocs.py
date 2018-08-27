@@ -75,7 +75,7 @@ def getPorts(input):
                 for world in portsCopy[j][0]:
                     portsCopy[i][0].append(world)
                 if not j in duplicates:
-                    duplicates.append(i+j)
+                    duplicates.append(j)
 
     # Delete duplicate locations
     duplicates.sort(reverse=True)
