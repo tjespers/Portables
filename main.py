@@ -116,7 +116,6 @@ class Bot(commands.Bot):
         self.start_time = None
         self.app_info = None
         self.loop.create_task(self.track_start())
-        self.loop.create_task(self.load_all_extensions())
 
     async def track_start(self):
         """
@@ -140,7 +139,6 @@ class Bot(commands.Bot):
         Attempts to load all .py files in /cogs/ as cog extensions
         """
         await self.wait_until_ready()
-        await asyncio.sleep(2)  # ensure that on_ready has completed and finished printing
         config = config_load()
         channel = self.get_channel(config['logsChannel'])
         cogs = [x.stem for x in Path('cogs').glob('*.py')]
@@ -156,7 +154,10 @@ class Bot(commands.Bot):
                 msg += f'Failed to load extension: {error}\n'
         print('-' * 10)
         logging.info(msg)
-        await self.send_message(channel, msg)
+        if 'Failed' in msg:
+            await self.send_message(channel, msg)
+        else:
+            await self.send_message(channel, f'Succesfully loaded all extensions')
 
     async def on_ready(self):
         """
@@ -183,7 +184,7 @@ class Bot(commands.Bot):
                f'Using tweepy version: {tweepy.__version__}')
         print(msg)
         print('-' * 10)
-        discord_msg += msg
+        discord_msg += '\n' + msg
         logging.info(msg)
         for chan in self.get_server(config['portablesServer']).channels:
             async for m in self.logs_from(chan):
@@ -191,9 +192,10 @@ class Bot(commands.Bot):
         msg = f'Loaded old messages'
         print(msg)
         print('-' * 10)
-        discord_msg += msg
+        discord_msg += '\n' + msg
         logging.info(msg)
         await self.send_message(channel, discord_msg)
+        self.loop.create_task(self.load_all_extensions())
         self.loop.create_task(self.role_setup())
         self.loop.create_task(self.notify(api))
 
