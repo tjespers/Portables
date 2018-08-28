@@ -19,9 +19,9 @@ client = gspread.authorize(creds)
 
 sheet = client.open(config['sheetName']).sheet1
 
-locations = ["CA", "BE", "BA", "SP", "BU", "CW", "PRIF", "MG", "VIP", "GE", "ITH", "MEI", "TRA"]
+locations = ["CA", "LC", "BA", "SP", "BU", "CW", "PRIF", "MG", "VIP", "GE", "ITH", "MEI", "TRA"]
 portablesNames = ['Fletcher', 'Crafter', 'Brazier', 'Sawmill', 'Forge', 'Range', 'Well']
-locs = 'CA, BE, BA, SP, BU, CW, PRIF, MG, VIP, GE, ITH, MEI, TRA'
+locs = 'CA, LC, BA, SP, BU, CW, PRIF, MG, VIP, GE, ITH, MEI, TRA'
 busyLocs = [[84, "CA"], [99, "CA"], [100, "SP"]]
 forbiddenLocs = [[2, "BU"]]
 highestWorld = 141
