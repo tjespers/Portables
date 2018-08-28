@@ -173,8 +173,8 @@ class Bot(commands.Bot):
                f'Time: {str(self.start_time)} UTC')
         print(msg)
         print('-' * 10)
+        discord_msg = msg
         logging.info(msg)
-        await self.send_message(channel, msg)
         auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
         auth.set_access_token(config['access_token_key'], config['access_token_secret'])
         api = tweepy.API(auth)
@@ -183,16 +183,17 @@ class Bot(commands.Bot):
                f'Using tweepy version: {tweepy.__version__}')
         print(msg)
         print('-' * 10)
+        discord_msg += msg
         logging.info(msg)
-        await self.send_message(channel, msg)
         for chan in self.get_server(config['portablesServer']).channels:
             async for m in self.logs_from(chan):
                 self.messages.append(m)
         msg = f'Loaded old messages'
         print(msg)
         print('-' * 10)
+        discord_msg += msg
         logging.info(msg)
-        await self.send_message(channel, msg)
+        await self.send_message(channel, discord_msg)
         self.loop.create_task(self.role_setup())
         self.loop.create_task(self.notify(api))
 
@@ -238,7 +239,7 @@ class Bot(commands.Bot):
                         if e.name == emoji:
                             await self.add_reaction(message, e)
                             break
-        msg = f'Now managing roles in #{channel.name} on server {channel.server}'
+        msg = f'Now managing roles in <#{channel.id}> on server {channel.server.name}'
         print(msg)
         print('-' * 10)
         logChannel = self.get_channel(config['logsChannel'])
@@ -342,7 +343,7 @@ class Bot(commands.Bot):
                         if 'Happy' in m.content:
                             notifiedThisHourHappyHour = True
                             break
-            msg = f'Now sending notifications in #{channel.name} on server {channel.server}'
+            msg = f'Now sending notifications in <#{channel.id}> on server {channel.server.name}'
             logging.info(msg)
             print(msg)
             print('-' * 10)
