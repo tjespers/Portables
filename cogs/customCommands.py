@@ -75,7 +75,6 @@ class CustomCommands:
         Gives the link for the Portables discord server.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         await self.bot.say(f'**Portables Discord:**\nhttps://discord.gg/QhBCYYr')
 
     @commands.command(pass_context=True)
@@ -84,7 +83,6 @@ class CustomCommands:
         Explains all abbreviations.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         msg = (f'**Abbreviations:**\n\n'
                f'Portables:\n'
                f'• R = Ranges\n'
@@ -112,7 +110,6 @@ class CustomCommands:
         Gives the link to the public Portables sheet.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         await self.bot.say(f'**Portables sheets:**\nhttps://docs.google.com/spreadsheets/d/16Yp-eLHQtgY05q6WBYA2MDyvQPmZ4Yr3RHYiBCBj2Hc/pub')
 
     @commands.command(pass_context=True)
@@ -121,7 +118,6 @@ class CustomCommands:
         Gives the link to the Portables forum thread.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         await self.bot.say(f'**Portables forum thread:**\nhttp://services.runescape.com/m=forum/forums.ws?75,76,789,65988634')
 
     @commands.command(pass_context=True)
@@ -130,7 +126,6 @@ class CustomCommands:
         Gives the link to the Portables twitter.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         await self.bot.say(f'**Portables Twitter:**\nhttps://www.twitter.com/PortablesRS')
 
     @commands.command(pass_context=True)
@@ -139,7 +134,6 @@ class CustomCommands:
         Gives the Reddit link DXP info.
         '''
         addCommand()
-        await self.bot.delete_message(ctx.message)
         await self.bot.say(f'**DXP info:**\nhttps://www.reddit.com/9bjq8n')
 
     @commands.command(pass_context=True)
