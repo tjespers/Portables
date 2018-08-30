@@ -440,9 +440,12 @@ class Logs:
             for name in afterNames:
                 if not name in beforeNames:
                     newName = name
+                    for e in after:
+                        if e.name == name:
+                            afterEmoji = e
             if oldName and newName:
                 logEvent()
-                title = f'Emoji name changed: {str(after)}'
+                title = f'**Emoji name changed:** {str(afterEmoji)}'
                 colour = 0x00b2ff
                 timestamp = datetime.utcnow()
                 txt = f'Before: {oldName}\nAfter: {newName}'
