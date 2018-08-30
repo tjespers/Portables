@@ -140,7 +140,7 @@ class CustomCommands:
         '''
         addCommand()
         await self.bot.delete_message(ctx.message)
-        await self.bot.say(f'**DXP info:**\nhttps://www.redd.it/9bjq8n')
+        await self.bot.say(f'**DXP info:**\nhttps://www.reddit.com/9bjq8n')
 
     @commands.command(pass_context=True)
     async def rank(self, ctx, rank=""):
