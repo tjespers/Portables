@@ -225,9 +225,6 @@ class DNDCommands:
     '''
     @commands.command(pass_context=True)
     async def happyhour(self, ctx):
-        '''
-        # Returns the time until the next happy hour.
-        '''
         addCommand()
         times = [1.0, 9.0, 14.0, 16.5, 21.0]
         now = datetime.utcnow()
