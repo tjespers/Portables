@@ -403,8 +403,8 @@ class Logs:
             if before[0].server != self.server:
                 return
         if isLogging():
-            logEvent()
             if len(before) != len(after):
+                logEvent()
                 if len(before) > len(after):
                     title = f'**Emoji Deleted: **'
                     for e in before:
@@ -422,6 +422,31 @@ class Logs:
                 timestamp = datetime.utcnow()
                 id = f'Server ID: {self.server.id}'
                 txt = f'{len(after)}/50 emojis'
+                embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
+                embed.set_footer(text=id)
+                await self.bot.send_message(self.channel, embed=embed)
+                return
+            beforeNames = []
+            for e in before:
+                beforeNames.append(e.name)
+            afterNames = []
+            for e in after:
+                afterNames.append(e.name)
+            oldName = ''
+            newName = ''
+            for name in beforeNames:
+                if not name in afterNames:
+                    oldName = name
+            for name in afterNames:
+                if not name in beforeNames:
+                    newName = name
+            if oldName and newName:
+                logEvent()
+                title = f'Emoji name changed'
+                colour = 0x00b2ff
+                timestamp = datetime.utcnow()
+                txt = f'Before: {oldName}\nAfter: {newName}'
+                id = f'Server ID: {self.server.id}'
                 embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
                 embed.set_footer(text=id)
                 await self.bot.send_message(self.channel, embed=embed)
