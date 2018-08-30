@@ -404,27 +404,28 @@ class Logs:
                 return
         if isLogging():
             logEvent()
-            if len(before) > len(after):
-                title = f'**Emoji Deleted: **'
-                for e in before:
-                    if not e in after:
-                        title += e.name
-                        break
-                colour = 0xff0000
-            else:
-                title = f'**Emoji Added: **'
-                for e in after:
-                    if not e in before:
-                        title += f'{e.name} {str(e)}'
-                        break
-                colour = 0x00e400
-            timestamp = datetime.utcnow()
-            id = f'Server ID: {self.server.id}'
-            txt = f'{len(after)}/50 emojis'
-            embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
-            embed.set_footer(text=id)
-            await self.bot.send_message(self.channel, embed=embed)
-            return
+            if len(before) != len(after):
+                if len(before) > len(after):
+                    title = f'**Emoji Deleted: **'
+                    for e in before:
+                        if not e in after:
+                            title += e.name
+                            break
+                    colour = 0xff0000
+                else:
+                    title = f'**Emoji Added: **'
+                    for e in after:
+                        if not e in before:
+                            title += f'{e.name} {str(e)}'
+                            break
+                    colour = 0x00e400
+                timestamp = datetime.utcnow()
+                id = f'Server ID: {self.server.id}'
+                txt = f'{len(after)}/50 emojis'
+                embed = discord.Embed(title=title, colour=colour, timestamp=timestamp, description=txt)
+                embed.set_footer(text=id)
+                await self.bot.send_message(self.channel, embed=embed)
+                return
 
 def setup(bot):
     bot.add_cog(Logs(bot))
