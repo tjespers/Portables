@@ -222,10 +222,11 @@ class DNDCommands:
         msg = config['sinkholeEmoji'] + " **Sinkhole** will spawn in " + timeToSinkhole + "."
         await self.bot.say(msg)
 
+    '''
     @commands.command(pass_context=True)
     async def happyhour(self, ctx):
         '''
-        Returns the time until the next happy hour.
+        # Returns the time until the next happy hour.
         '''
         addCommand()
         times = [1.0, 9.0, 14.0, 16.5, 21.0]
@@ -242,6 +243,7 @@ class DNDCommands:
         timeToHappyHour = timeDiffToString(timeToHappyHour)
         msg = config['happyHourEmoji'] + " **Happy Hour** will begin in " + timeToHappyHour + "."
         await self.bot.say(msg)
+    '''
 
 def setup(bot):
     bot.add_cog(DNDCommands(bot))

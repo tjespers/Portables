@@ -205,7 +205,7 @@ class Bot(commands.Bot):
         emojis = [config['warbandsEmoji'], config['amloddEmoji'], config['hefinEmoji'], config['ithellEmoji'],
                   config['trahaearnEmoji'], config['meilyrEmoji'], config['crwysEmoji'], config['cadarnEmoji'],
                   config['iorwerthEmoji'], config['cacheEmoji'], config['sinkholeEmoji'], config['yewsEmoji'],
-                  config['goebiesEmoji'], config['merchantEmoji'], config['happyHourEmoji']]
+                  config['goebiesEmoji'], config['merchantEmoji']] #, config['happyHourEmoji']]
         messages = 0
         async for message in self.logs_from(channel, limit=1):
             self.messages.append(message)
@@ -226,7 +226,7 @@ class Bot(commands.Bot):
             msg += config['goebiesEmoji'] + " Goebies\n"
             msg += config['warbandsEmoji'] + " Warbands\n"
             msg += config['merchantEmoji'] + " Merchant\n"
-            msg += config['happyHourEmoji'] + " Happy Hour\n"
+            # msg += config['happyHourEmoji'] + " Happy Hour\n"
             msg += "\nIf you wish to stop receiving notifications, simply remove your reaction. If your reaction isn't there anymore, then you can add a new one and remove it."
             await self.send_message(channel, msg)
             async for message in self.logs_from(channel, limit=1):
@@ -274,7 +274,7 @@ class Bot(commands.Bot):
         if channel.id == config['roleChannel']:
             emoji = reaction.emoji
             roleName = emoji.name
-            if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant", "HappyHour"]:
+            if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant"]: #, "HappyHour"]:
                 role = discord.utils.get(user.server.roles, name=roleName)
                 await self.add_roles(user, role)
                 addCommand()
@@ -287,7 +287,7 @@ class Bot(commands.Bot):
             return
         emoji = reaction.emoji
         roleName = emoji.name
-        if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant", "HappyHour"]:
+        if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant"]: #, "HappyHour"]:
             role = discord.utils.get(user.server.roles, name=roleName)
             await self.remove_roles(user, role)
             addCommand()
@@ -315,7 +315,7 @@ class Bot(commands.Bot):
             notifiedThisHourGoebies = False
             notifiedThisHourSinkhole = False
             notifiedThisDayMerchant = False
-            notifiedThisHourHappyHour = False
+            # notifiedThisHourHappyHour = False
             reset = False
             currentTime = datetime.utcnow()
             async for m in self.logs_from(channel, limit=20):
@@ -342,9 +342,11 @@ class Bot(commands.Bot):
                         if 'Sinkhole' in m.content:
                             notifiedThisHourSinkhole = True
                             break
+                        '''
                         if 'Happy' in m.content:
                             notifiedThisHourHappyHour = True
                             break
+                        '''
             msg = f'Now sending notifications in <#{channel.id}> on server {channel.server.name}'
             logging.info(msg)
             print(msg)
@@ -418,9 +420,11 @@ class Bot(commands.Bot):
                 if not notifiedThisHourSinkhole and now.minute >= 25 and now.minute <= 26:
                     await self.send_message(channel, config['msgSinkhole'] + config['sinkholeRole'])
                     notifiedThisHourSinkhole = True
+                '''
                 if not notifiedThisHourHappyHour and ((now.hour in [0, 8, 13, 20] and now.minute >= 45 and now.minute <= 46) or (now.hour == 16 and now.minute >= 15 and now.minute <= 16)):
                     await self.send_message(channel, config['msgHappyHour'] + config['happyHourRole'])
                     notifiedThisHourHappyHour = True
+                '''
 
                 if now.minute > 1 and reset:
                     reset = False
@@ -432,7 +436,7 @@ class Bot(commands.Bot):
                     notifiedThisHourYews140 = False
                     notifiedThisHourGoebies = False
                     notifiedThisHourSinkhole = False
-                    notifiedThisHourHappyHour = False
+                    # notifiedThisHourHappyHour = False
                     if now.hour == 0:
                         notifiedThisDayMerchant = False
                     reset = True
