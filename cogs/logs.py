@@ -442,7 +442,7 @@ class Logs:
                     newName = name
             if oldName and newName:
                 logEvent()
-                title = f'Emoji name changed'
+                title = f'Emoji name changed: {str(after)}'
                 colour = 0x00b2ff
                 timestamp = datetime.utcnow()
                 txt = f'Before: {oldName}\nAfter: {newName}'
