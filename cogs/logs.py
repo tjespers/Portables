@@ -443,6 +443,7 @@ class Logs:
                     for e in after:
                         if e.name == name:
                             afterEmoji = e
+                            break
             if oldName and newName:
                 logEvent()
                 title = f'**Emoji name changed:** {str(afterEmoji)}'
