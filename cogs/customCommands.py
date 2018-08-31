@@ -195,7 +195,13 @@ class CustomCommands:
         input = input.replace('\v', '')
         input = input.replace('_', ' ')
         input = input.strip()
-        if len(input) > 12 or not input:
+        if not input:
+            try:
+                await self.bot.change_nickname(user, None)
+                await self.bot.say(f'Your nickname has been removed.')
+            except discord.Forbidden:
+                await self.bot.say('Sorry, I do not have permission to change your nickname.')
+        if len(input) > 12:
             await self.bot.say('Sorry, you can only change your nickname to a valid RSN. RSNs have a maximum length of 12 characters and cannot be empty.')
             return
         if re.match('^[A-z0-9 -]+$', input) is None:
