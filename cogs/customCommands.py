@@ -201,6 +201,7 @@ class CustomCommands:
                 await self.bot.say(f'Your nickname has been removed.')
             except discord.Forbidden:
                 await self.bot.say('Sorry, I do not have permission to change your nickname.')
+            return
         if len(input) > 12:
             await self.bot.say('Sorry, you can only change your nickname to a valid RSN. RSNs have a maximum length of 12 characters and cannot be empty.')
             return
