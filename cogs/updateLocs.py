@@ -294,7 +294,7 @@ class updateLocs:
         for port in newPorts:
             loc = port[1]
             for world in port[0]:
-                if not world >= 0 or not world <= highestWorld:
+                if world < 1 or world > highestWorld:
                     await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.')
                     return
                 if world in forbiddenWorlds:
@@ -433,18 +433,8 @@ class updateLocs:
         for port in oldPorts:
             loc = port[1]
             for world in port[0]:
-                if not world >= 0 or not world <= highestWorld:
-                    await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.')
-                    return
-                if world in forbiddenWorlds:
-                    await self.bot.say(f'Sorry, world **{str(world)}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.')
-                    return
-                for forbiddenLoc in forbiddenLocs:
-                    if world == forbiddenLoc[0] and loc == forbiddenLoc[1]:
-                        await self.bot.say(f'Sorry, **{str(world)} {loc}** is a forbidden location.')
-                        return
-                if loc == 'GE' and world not in f2pWorlds:
-                    await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
+                if world < 1:
+                    await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a positive integer.')
                     return
 
         try:
