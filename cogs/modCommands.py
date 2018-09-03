@@ -281,20 +281,20 @@ class ModCommands:
                 name = m.name
             if m.top_role < smileyRole:
                 await self.bot.add_roles(m, smileyRole)
-                txt += f'{name} has been promoted to **Smiley**.\n'
+                txt += f'**{name}** has been promoted to **Smiley**.\n'
             elif m.top_role < rankRole:
                 roles.append(rankRole)
                 roles.append(editorRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been promoted to **Editor**.\n'
+                txt += f'**{name}** has been promoted to **Editor**.\n'
             elif m.top_role < modRole:
                 roles.append(modRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been promoted to **Moderator**.\n'
+                txt += f'**{name}** has been promoted to **Moderator**.\n'
             elif m.top_role < adminRole:
                 if isLeader:
                     await self.bot.add_roles(m, adminRole)
-                    txt += f'{name} has been promoted to **Admin**.\n'
+                    txt += f'**{name}** has been promoted to **Admin**.\n'
                 else:
                     await self.bot.say(f'Sorry, you need Leader permissions to promote **{name}** to **Admin**.')
             else:
@@ -366,24 +366,24 @@ class ModCommands:
             elif m.top_role >= adminRole:
                 if isLeader:
                     await self.bot.remove_roles(m, adminRole)
-                    txt += f'{name} has been demoted to **Moderator**.\n'
+                    txt += f'**{name}** has been demoted to **Moderator**.\n'
                 else:
                     await self.bot.say(f'Sorry, you need Leader permissions to demote **{name}** to **Moderator**.')
             elif m.top_role >= modRole:
                 roles.remove(modRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been demoted to **Editor**.\n'
+                txt += f'**{name}** has been demoted to **Editor**.\n'
             elif m.top_role >= rankRole:
                 roles.remove(rankRole)
                 roles.remove(editorRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been demoted to **Smiley**.\n'
+                txt += f'**{name}** has been demoted to **Smiley**.\n'
             elif m.top_role >= smileyRole:
                 if vetRole in roles:
                     await self.bot.remove_roles(m, smileyRole, vetRole)
                 else:
                     await self.bot.remove_roles(m, smileyRole)
-                txt += f'{name} has been deranked.\n'
+                txt += f'**{name}** has been deranked.\n'
             else:
                 await self.bot.say(f'**{name}** cannot be demoted any further.')
         if txt:
@@ -465,18 +465,18 @@ class ModCommands:
                 roles.remove(editorRole)
                 roles.remove(rankRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been deranked.\n'
+                txt += f'**{name}** has been deranked.\n'
             elif m.top_role >= rankRole:
                 roles.remove(editorRole)
                 roles.remove(rankRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been deranked.\n'
+                txt += f'**{name}** has been deranked.\n'
             elif m.top_role >= smileyRole:
                 if vetRole in roles:
                     roles.remove(vetRole)
                 roles.remove(smileyRole)
                 await self.bot.replace_roles(m, *roles)
-                txt += f'{name} has been deranked.\n'
+                txt += f'**{name}** has been deranked.\n'
             else:
                 await self.bot.say(f'**{name}** cannot be deranked any further.')
         if txt:
