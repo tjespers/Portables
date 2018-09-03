@@ -49,12 +49,6 @@ def config_load():
 
 def restart():
     print("Restarting script...")
-    '''
-    dir = os.path.dirname(os.path.realpath(__file__))
-    cmdline = "Portables.bat"
-    call("start cmd /K " + cmdline, cwd=dir, shell=True)
-    print("New script started, quitting...")
-    '''
     exit(0)
 
 def timeDiffToString(time):

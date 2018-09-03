@@ -307,7 +307,6 @@ class updateLocs:
                 if loc == 'GE' and world not in f2pWorlds:
                     await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
                     return
-                ''' Checking for >3 ports disabled for dxp
                 portNames = []
                 count = 0
                 i = 0
@@ -333,7 +332,6 @@ class updateLocs:
                                 msgPorts += "and "
                     await self.bot.say(f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{str(world)} {loc}** already has a {msgPorts}.')
                     return
-                '''
 
         newPortsText = format(newPorts).replace('*', '\*')
         currentPorts = getPorts(val)

@@ -23,13 +23,6 @@ config = config_load()
 
 def restart():
     print("Restarting script...")
-    '''
-    dir = os.path.dirname(os.path.realpath(__file__))
-    parentDir = os.path.abspath(os.path.join(dir, os.pardir))
-    cmdline = "Portables.bat"
-    call("start cmd /K " + cmdline, cwd=parentDir, shell=True)
-    print("New script started, quitting...")
-    '''
     exit(0)
 
 def pingToString(time):
