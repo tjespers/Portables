@@ -25,6 +25,31 @@ loggingBool = True
 
 commandsAnswered = 0
 
+districts = ['Cadarn',
+             'Amlodd',
+             'Crwys',
+             'Ithell',
+             'Hefin',
+             'Meilyr',
+             'Trahaearn',
+             'Iorwerth']
+
+notifRoles = ["Warbands",
+              "Amlodd",
+              "Hefin",
+              "Ithell",
+              "Trahaearn",
+              "Meilyr",
+              "Crwys",
+              "Cadarn",
+              "Iorwerth",
+              "Cache",
+              "Sinkhole",
+              "Yews",
+              "Goebies",
+              "Merchant",
+              "Spotlight"]
+
 def addCommand():
     global commandsAnswered
     commandsAnswered += 1
@@ -199,28 +224,16 @@ class Bot(commands.Bot):
         emojis = [config['warbandsEmoji'], config['amloddEmoji'], config['hefinEmoji'], config['ithellEmoji'],
                   config['trahaearnEmoji'], config['meilyrEmoji'], config['crwysEmoji'], config['cadarnEmoji'],
                   config['iorwerthEmoji'], config['cacheEmoji'], config['sinkholeEmoji'], config['yewsEmoji'],
-                  config['goebiesEmoji'], config['merchantEmoji']] #, config['happyHourEmoji']]
+                  config['goebiesEmoji'], config['merchantEmoji'], config['spotlightEmoji']] #, config['happyHourEmoji']]
         messages = 0
         async for message in self.logs_from(channel, limit=1):
             self.messages.append(message)
             messages += 1
         if not messages:
             msg = "React to this message with any of the following emoji to be added to the corresponding role for notifications:\n\n"
-            msg += config['amloddEmoji'] + " Amlodd\n"
-            msg += config['hefinEmoji'] + " Hefin\n"
-            msg += config['ithellEmoji'] + " Ithell\n"
-            msg += config['trahaearnEmoji'] + " Trahaearn\n"
-            msg += config['meilyrEmoji'] + " Meilyr\n"
-            msg += config['crwysEmoji'] + " Crwys\n"
-            msg += config['cadarnEmoji'] + " Cadarn\n"
-            msg += config['iorwerthEmoji'] + " Iorwerth\n"
-            msg += config['cacheEmoji'] + " Caches\n"
-            msg += config['sinkholeEmoji'] + " Sinkholes\n"
-            msg += config['yewsEmoji'] + " Yews\n"
-            msg += config['goebiesEmoji'] + " Goebies\n"
-            msg += config['warbandsEmoji'] + " Warbands\n"
-            msg += config['merchantEmoji'] + " Merchant\n"
-            # msg += config['happyHourEmoji'] + " Happy Hour\n"
+            for r in notifRoles:
+                emojiName = f'{r.lower()}Emoji'
+                msg += config[emojiName] + ' ' + r + '\n'
             msg += "\nIf you wish to stop receiving notifications, simply remove your reaction. If your reaction isn't there anymore, then you can add a new one and remove it."
             await self.send_message(channel, msg)
             async for message in self.logs_from(channel, limit=1):
@@ -268,7 +281,7 @@ class Bot(commands.Bot):
         if channel.id == config['roleChannel']:
             emoji = reaction.emoji
             roleName = emoji.name
-            if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant"]: #, "HappyHour"]:
+            if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant", "Spotlight"]: #, "HappyHour"]:
                 role = discord.utils.get(user.server.roles, name=roleName)
                 await self.add_roles(user, role)
                 addCommand()
@@ -281,7 +294,7 @@ class Bot(commands.Bot):
             return
         emoji = reaction.emoji
         roleName = emoji.name
-        if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant"]: #, "HappyHour"]:
+        if emoji.name in ["Warbands", "Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth", "Cache", "Sinkhole", "Yews", "Goebies", "Merchant", "Spotlight"]: #, "HappyHour"]:
             role = discord.utils.get(user.server.roles, name=roleName)
             await self.remove_roles(user, role)
             addCommand()
@@ -310,37 +323,46 @@ class Bot(commands.Bot):
             notifiedThisHourSinkhole = False
             notifiedThisDayMerchant = False
             # notifiedThisHourHappyHour = False
+            notifiedThisDaySpotlight = False
             reset = False
             currentTime = datetime.utcnow()
-            async for m in self.logs_from(channel, limit=20):
+            async for m in self.logs_from(channel, limit=100):
                 if m.timestamp.day == currentTime.day:
                     if 'Merchant' in m.content:
                         notifiedThisDayMerchant = True
-                        break
+                        continue
+                    if 'Spotlight' in m.content:
+                        notifiedThisDaySpotlight = True
+                        continue
                     if m.timestamp.hour == currentTime.hour:
-                        if any(district in m.content for district in ["Amlodd", "Hefin", "Ithell", "Trahaearn", "Meilyr", "Crwys", "Cadarn", "Iorwerth"]):
+                        if 'Warbands' in m.content:
+                            notifiedThisHourWarbands = True
+                            continue
+                        if any(d in m.content for d in districts):
                             notifiedThisHourVOS = True
-                            break
+                            continue
                         if 'Cache' in m.content:
                             notifiedThisHourCache = True
-                            break
+                            continue
                         if 'yew' in m.content:
                             if '48' in m.content:
                                 notifiedThisHourYews48 = True
                             elif '140' in m.content:
                                 notifiedThisHourYews140 = True
-                            break
+                            continue
                         if 'Goebies' in m.content:
                             notifiedThisHourGoebies = True
-                            break
+                            continue
                         if 'Sinkhole' in m.content:
                             notifiedThisHourSinkhole = True
-                            break
+                            continue
                         '''
                         if 'Happy' in m.content:
                             notifiedThisHourHappyHour = True
-                            break
+                            continue
                         '''
+                else:
+                    break
             msg = f'Now sending notifications in <#{channel.id}> on server {channel.server.name}'
             logging.info(msg)
             print(msg)
@@ -362,6 +384,19 @@ class Bot(commands.Bot):
                             break
                         await self.send_message(channel, config['msgMerchant'] + config['merchantRole'] + "\n" + html.unescape(tweet.full_text))
                         notifiedThisDayMerchant = True
+                if not notifiedThisDaySpotlight and i % 6 == 0:
+                    jagexTweets = api.user_timeline(screen_name="JagexClock", count=5)
+                    for tweet in jagexTweets:
+                        tweetTime = tweet.created_at
+                        if now.hour != tweetTime.hour or not 'spotlight' in tweet.text:
+                            continue
+                        minigame = tweet.text.replace(' is now the spotlighted minigame!', '')
+                        emoji = config['spotlightEmoji']
+                        role = config['spotlightRole']
+                        msg = f'{emoji} **{minigame}** is now the spotlighted minigame. {role}'
+                        await self.send_message(channel, msg)
+                        notifiedThisDaySpotlight = True
+                        break
                 if not notifiedThisHourVOS and now.minute <= 1:
                     jagexTweets = api.user_timeline(screen_name="JagexClock", count=5)
                     msg = ""
@@ -369,22 +404,11 @@ class Bot(commands.Bot):
                         tweetTime = tweet.created_at
                         if now.hour != tweetTime.hour or not "Voice of Seren" in tweet.text:
                             continue
-                        if "Amlodd" in tweet.text:
-                            msg += config['msgAmlodd'] + config['AmloddRole'] + '\n'
-                        if "Hefin" in tweet.text:
-                            msg += config['msgHefin'] + config['HefinRole'] + '\n'
-                        if "Ithell" in tweet.text:
-                            msg += config['msgIthell'] + config['ithellRole'] + '\n'
-                        if "Trah" in tweet.text:
-                            msg += config['msgTrahaearn'] + config['TrahaearnRole'] + '\n'
-                        if "Meilyr" in tweet.text:
-                            msg += config['msgMeilyr'] + config['meilyrRole'] + '\n'
-                        if "Crwys" in tweet.text:
-                            msg += config['msgCrwys'] + config['crwysRole'] + '\n'
-                        if "Cadarn" in tweet.text:
-                            msg += config['msgCadarn'] + config['cadarnRole'] + '\n'
-                        if "Iorwerth" in tweet.text:
-                            msg += config['msgIorwerth'] + config['iorwerthRole'] + '\n'
+                        for d in districts:
+                            if d in tweet.text:
+                                msgName = f'msg{d}'
+                                roleName = f'{d.lower()}Role'
+                                msg += config[msgName] + config[roleName] + '\n'
                         if msg:
                             notifiedThisHourVOS = True
                             await self.send_message(channel, msg)
@@ -433,6 +457,7 @@ class Bot(commands.Bot):
                     # notifiedThisHourHappyHour = False
                     if now.hour == 0:
                         notifiedThisDayMerchant = False
+                        notifiedThisDaySpotlight = False
                     reset = True
                 await asyncio.sleep(10)
         except Exception as e:
