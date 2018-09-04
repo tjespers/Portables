@@ -30,7 +30,8 @@ ranks = [['WARBANDS', config['WARBANDS']],
          ['YEWS', config['YEWS']],
          ['GOEBIES', config['GOEBIES']],
          ['MERCHANT', config['MERCHANT']],
-         ['HAPPYHOUR', config['HAPPYHOUR']]]
+         #['HAPPYHOUR', config['HAPPYHOUR']],
+         ['SPOTLIGHT', config['SPOTLIGHT']]]
 
 def pingToString(time):
     seconds = time.seconds
