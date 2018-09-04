@@ -13,11 +13,27 @@ import re
 import tweepy
 from main import addCommand
 from main import timeDiffToString
+from main import districts
+import copy
 
 config = config_load()
 auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
 auth.set_access_token(config['access_token_key'], config['access_token_secret'])
 api = tweepy.API(auth)
+
+minigames = ['Cabbage Facepunch Bonanza',
+             'Heist', 'Trouble Brewing',
+             'Castle Wars',
+             'Pest Control',
+             'Soul Wars',
+             'Fist of Guthix',
+             'Barbarian Assault',
+             'Conquest',
+             'Fishing Trawler',
+             'The Great Orb Project',
+             'Flash Powder Factory',
+             'Castle Wars',
+             'Stealing Creation']
 
 class DNDCommands:
     def __init__(self, bot):
@@ -85,50 +101,42 @@ class DNDCommands:
         Returns the current Voice of Seren.
         '''
         addCommand()
+        await self.bot.send_typing(ctx.message.channel)
         now = datetime.utcnow()
         now = now.replace(microsecond=0)
-        msg = "The current **Voice of Seren** is: "
-        jagexTweets = api.user_timeline(screen_name="JagexClock", count=5)
+        jagexTweets = api.user_timeline(screen_name="JagexClock", count=10)
+        vos = []
+        current = []
+        count = 0
         for tweet in jagexTweets:
-            if "Amlodd" in tweet.text or "Hefin" in tweet.text or "Ithell" in tweet.text or "Trah" in tweet.text or "Meilyr" in tweet.text or "Crwys" in tweet.text or "Cadarn" in tweet.text or "Iorwerth" in tweet.text:
-                count = 0
-                if "Amlodd" in tweet.text:
-                    msg += config['amloddEmoji'] + " **Amlodd**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Hefin" in tweet.text:
-                    msg += config['hefinEmoji'] + " **Hefin**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Ithell" in tweet.text:
-                    msg += config['ithellEmoji'] + " **Ithell**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Trah" in tweet.text:
-                    msg += config['trahaearnEmoji'] + " **Trahaearn**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Meilyr" in tweet.text:
-                    msg += config['meilyrEmoji'] + " **Meilyr**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Crwys" in tweet.text:
-                    msg += config['crwysEmoji'] + " **Crwys**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Cadarn" in tweet.text:
-                    msg += config['cadarnEmoji'] + " **Cadarn**"
-                    msg += " and " if not count else "."
-                    count += 1
-                if "Iorwerth" in tweet.text:
-                    msg += config['iorwerthEmoji'] + " **Iorwerth**"
-                    msg += " and " if not count else "."
-                    count += 1
+            if not 'Voice of Seren' in tweet.text:
+                continue
+            count += 1
+            txt = tweet.text
+            for d in districts:
+                if d in txt:
+                    vos.append(d)
+                    if count == 1:
+                        current.append(d)
+            if count == 2:
                 break
+        next = copy.deepcopy(districts)
+        indices = []
+        for i, d in enumerate(districts):
+            if d in vos:
+                indices.append(i)
+        indices.sort(reverse=True)
+        for i in indices:
+            del next[i]
+        current_txt = f'{current[0]}, {current[1]}'
+        next_txt = f'{next[0]}, {next[1]}, {next[2]}, {next[3]}'
         timeToVos = timedelta(hours=1) - timedelta(minutes=now.minute, seconds=now.second)
         timeToVos = timeDiffToString(timeToVos)
-        msg += "\nThis will change in " + timeToVos + "."
-        await self.bot.say(msg)
+        title = f'Voice of Seren'
+        colour = 0x00b2ff
+        embed = discord.Embed(title=title, colour=colour, description=current_txt)
+        embed.add_field(name=f'Up next ({timeToVos})', value=next_txt, inline=False)
+        await self.bot.say(embed=embed)
 
     @commands.command(pass_context=True)
     async def merchant(self, ctx):
@@ -221,6 +229,40 @@ class DNDCommands:
         timeToSinkhole = timeDiffToString(timeToSinkhole)
         msg = config['sinkholeEmoji'] + " **Sinkhole** will spawn in " + timeToSinkhole + "."
         await self.bot.say(msg)
+
+    @commands.command(pass_context=True)
+    async def spotlight(self, ctx):
+        '''
+        Returns the current and next minigame spotlight.
+        '''
+        addCommand()
+        await self.bot.send_typing(ctx.message.channel)
+        now = datetime.utcnow()
+        now = now.replace(microsecond=0)
+        jagexTweets = api.user_timeline(screen_name="JagexClock", count=150)
+        for tweet in jagexTweets:
+            tweetTime = tweet.created_at
+            if not 'spotlight' in tweet.text:
+                continue
+            minigame = tweet.text.replace(' is now the spotlighted minigame!', '')
+            break
+        timeSinceLastSpotlight = now - tweetTime
+        timeToSpotlight = timedelta(days=3) - timeSinceLastSpotlight
+        timeToSpotlight = timeDiffToString(timeToSpotlight)
+        title = f'Minigame Spotlight'
+        colour = 0x00b2ff
+        txt = f'{minigame}'
+        embed = discord.Embed(title=title, colour=colour, description=txt)
+        next = ""
+        index = 0
+        for i, m in enumerate(minigames):
+            if m == minigame:
+                if index != len(minigames) - 1:
+                    index = i+1
+                break
+        next = minigames[index]
+        embed.add_field(name=f'Up next ({timeToSpotlight})', value=next, inline=False)
+        await self.bot.say(embed=embed)
 
     '''
     @commands.command(pass_context=True)
