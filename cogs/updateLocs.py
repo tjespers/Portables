@@ -312,14 +312,14 @@ class updateLocs:
                 i = 0
                 for p in ports:
                     i += 1
-                    if loc in p:
-                        txt = p.split(loc, 1)[0]
-                        for l in locations:
-                            if l in txt:
-                                txt = txt.split(l, 1)[1]
-                        if str(world) in txt:
+                    p = getPorts(p)
+                    for entry in p:
+                        if loc != entry[1]:
+                            continue
+                        if world in entry[0]:
                             portNames.append(portablesNames[i-1])
                             count += 1
+                            break
                 if count >= 3:
                     msgPorts = ""
                     i = 0
