@@ -563,10 +563,13 @@ class ModCommands:
             await self.bot.say('Please mention the user who you want to accept. You can only mention one at a time.')
             return
         user = msg.mentions[0]
+        role = discord.utils.get(msg.server.roles, name='Smiley')
+        if role in user.roles:
+            await self.bot.say('Sorry, this user is already smilied.')
+            return
         smileyChannelID = config['smileyChannel']
         txt = f'Congratulations {user.mention}, \n\nYour application has been **accepted**. :white_check_mark: \nIf you have any questions, please do not hesitate to DM an admin or leader, or ask for help in <#{smileyChannelID}>. \n\nThank you for the help and welcome to the team! :slight_smile:'
         await self.bot.say(txt)
-        role = discord.utils.get(msg.server.roles, name='Smiley')
         await self.bot.add_roles(user, role)
         await self.bot.delete_message(msg)
         adminChannel = self.bot.get_channel(config['adminChannel'])
