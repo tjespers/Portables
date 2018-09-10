@@ -45,10 +45,11 @@ class smileyActivity:
         self.adminChannel = adminChannel
 
     @commands.command(pass_context=True)
-    async def smiley(self, ctx, *memberNames):
+    async def smileyactivity(self, ctx, *memberNames):
         '''
         Notes activity for a smiley on sheets (Rank+).
         '''
+        await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
         user = msg.author
         roles = user.roles
@@ -128,6 +129,7 @@ class smileyActivity:
         '''
         Adds a smiley to the sheets (Admin+).
         '''
+        await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
         user = msg.author
         roles = user.roles
@@ -188,6 +190,7 @@ class smileyActivity:
         '''
         Sets smiley status to active (Leader+).
         '''
+        await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
         user = msg.author
         roles = user.roles
