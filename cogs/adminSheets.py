@@ -53,6 +53,9 @@ class adminSheets:
         roles = user.roles
         channel = msg.channel
         server = msg.server
+        userName = user.nick
+        if not userName:
+            userName = user.name
         if server != self.server:
             await self.bot.say('Sorry, this command can only be used in the Portables Discord server.')
             return
@@ -67,6 +70,10 @@ class adminSheets:
         if not rankNames:
             await self.bot.say('Please add the rank(s) for whom you want to note activity on the sheets as argument(s).')
             return
+        for name in rankNames:
+            if name.upper() in userName.upper():
+                await self.bot.say('Sorry, you cannot track your own activity.')
+                return
         month = datetime.utcnow().strftime("%B")
         try:
             sheetMonth = sheet.cell(3, 1).value
@@ -126,6 +133,9 @@ class adminSheets:
         roles = user.roles
         channel = msg.channel
         server = msg.server
+        userName = user.nick
+        if not userName:
+            userName = user.name
         if server != self.server:
             await self.bot.say('Sorry, this command can only be used in the Portables Discord server.')
             return
@@ -140,6 +150,10 @@ class adminSheets:
         if not rankNames:
             await self.bot.say('Please add the rank(s) for whom you want to note activity on the sheets as argument(s).')
             return
+        for name in rankNames:
+            if name.upper() in userName.upper():
+                await self.bot.say('Sorry, you cannot track your own activity.')
+                return
         month = datetime.utcnow().strftime("%B")
         try:
             sheetMonth = sheet.cell(3, 1).value
