@@ -10,6 +10,7 @@ import re
 from main import addCommand
 from datetime import datetime, timedelta, timezone
 import copy
+from dateutil.relativedelta import relativedelta
 
 config = config_load()
 
@@ -47,8 +48,12 @@ class smileyActivity:
         server = bot.get_server(config['portablesServer'])
         roles = server.roles
         rank = discord.utils.get(roles, id=config['rankRole'])
+        admin = discord.utils.get(roles, id=config['adminRole'])
+        leader = discord.utils.get(roles, id=config['leaderRole'])
         self.server = server
         self.rank = rank
+        self.admin = admin
+        self.leader = leader
 
     @commands.command(pass_context=True)
     async def smiley(self, ctx, *memberNames):
@@ -74,7 +79,11 @@ class smileyActivity:
         if not memberNames:
             await self.bot.say('Please add the smiley(s) for whom you want to note activity on the sheets as argument(s).')
             return
-        smileys = sheet.col_values(1)[headerRows:]
+        try:
+            smileys = sheet.col_values(1)[headerRows:]
+        except:
+            regen()
+            smileys = sheet.col_values(1)[headerRows:]
         for i, smiley in enumerate(smileys):
             if smiley is None or not smiley:
                 smileys = smileys[:i]
@@ -93,7 +102,11 @@ class smileyActivity:
             if not row:
                 await self.bot.say(f'Sorry, I could not find a smiley by the name **{name}**.')
                 continue
-            activity = sheet.row_values(row)
+            try:
+                activity = sheet.row_values(row)
+            except:
+                regen()
+                activity = sheet.row_values(row)
             status = activity[1]
             activity = activity[4:12]
             if 'alt' in status:
@@ -120,6 +133,124 @@ class smileyActivity:
                 sheet.update_cell(row, col, timestamp)
                 sheet.update_cell(row, creditCol, userName)
             await self.bot.say(f'**{name}** has been noted as active for **{timestamp}**.')
+
+    @commands.command(pass_context=True)
+    async def addsmiley(self, ctx, name=""):
+        '''
+        Adds a smiley to the sheets (Admin+).
+        '''
+        msg = ctx.message
+        user = msg.author
+        roles = user.roles
+        channel = msg.channel
+        server = msg.server
+        if server != self.server:
+            await self.bot.say('Sorry, this command can only be used in the Portables Discord server.')
+            return
+        isAdmin = False
+        for r in roles:
+            if r.id == self.admin.id or user.id == config['owner']:
+                isAdmin = True
+                break
+        if not isAdmin:
+            await self.bot.say('Sorry, this command can only be used by Admins.')
+            return
+        if not name:
+            await self.bot.say('Please add the name of the player you want to add to the smileys sheet.')
+            return
+        try:
+            smileys = sheet.col_values(1)[headerRows:]
+        except:
+            regen()
+            smileys = sheet.col_values(1)[headerRows:]
+        currentSmileys = []
+        for i, smiley in enumerate(smileys):
+            if smiley is None or not smiley:
+                currentSmileys = smileys[:i]
+                break
+        for smiley in currentSmileys:
+            if name.upper() == smiley.upper():
+                await self.bot.say('**{name}** is already on the list of smileys.')
+                return
+        row = 0
+        for i, smiley in enumerate(smileys):
+            if name.upper() == smiley.upper():
+                row = i + headerRows + 1
+        if row:
+            try:
+                sheet.delete_row(row)
+            except:
+                regen()
+                sheet.delete_row(row)
+        row = headerRows + len(currentSmileys) + 1
+        timestamp = datetime.utcnow().strftime("%b %#d, %Y")
+        endTime = (datetime.utcnow() + relativedelta(months=+1)).strftime("%b %#d, %Y")
+        values = [name, 'No', 'Applied', '', '', '', '', '', '', '', '', '', '', 'Pending', timestamp, endTime]
+        try:
+            sheet.insert_row(values, row)
+        except:
+            regen()
+            sheet.insert_row(values, row)
+        await self.bot.say(f'**{name}** has been added to the smileys sheet.')
+
+    @commands.command(pass_context=True)
+    async def activatesmiley(self, ctx, name=""):
+        '''
+        Sets smiley status to active (Leader+).
+        '''
+        msg = ctx.message
+        user = msg.author
+        roles = user.roles
+        channel = msg.channel
+        server = msg.server
+        if server != self.server:
+            await self.bot.say('Sorry, this command can only be used in the Portables Discord server.')
+            return
+        isLeader = False
+        for r in roles:
+            if r.id == self.leader.id or user.id == config['owner']:
+                isLeader = True
+                break
+        if not isLeader:
+            await self.bot.say('Sorry, this command can only be used by Leaders.')
+            return
+        if not name:
+            await self.bot.say('Please add the name of the player you want to add to the smileys sheet.')
+            return
+        try:
+            smileys = sheet.col_values(1)[headerRows:]
+        except:
+            regen()
+            smileys = sheet.col_values(1)[headerRows:]
+        for i, smiley in enumerate(smileys):
+            if smiley is None or not smiley:
+                smileys = smileys[:i]
+                break
+        row = 0
+        for smiley in smileys:
+            if name.upper() in smiley.upper():
+                row = i + headerRows
+                name = smiley
+                break
+        if not row:
+            await self.bot.say(f'Sorry, I could not find a smiley by the name **{name}**.')
+            return
+        col = 14
+        try:
+            status = sheet.cell(row, col).value
+        except:
+            regen()
+            status = sheet.cell(row, col).value
+        if status == 'Active':
+            await self.bot.say(f'**{name}**\'s status was already set to active.')
+            return
+        try:
+            sheet.update_cell(row, col, 'Active')
+        except:
+            regen()
+            sheet.update_cell(row, col, 'Active')
+        await self.bot.say(f'**{name}**\'s status has been set to active.')
+
 
 def setup(bot):
     bot.add_cog(smileyActivity(bot))
