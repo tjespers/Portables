@@ -207,24 +207,6 @@ class updateLocs:
         self.rank = rank
 
     @commands.command(pass_context=True)
-    async def regenLocs(self, ctx):
-        '''
-        A command to regenerate the OAuth2 key for the Google sheets API (Chatty only).
-        '''
-        addCommand()
-        owner = config['owner']
-        user = ctx.message.author
-        if not user.id == owner:
-            await self.bot.say('Sorry, only Chatty has permission to do this.')
-            return
-        try:
-            regen()
-            await self.bot.say('I have successfully regenerated my OAuth2 key.')
-        except:
-            await self.bot.say('Sorry, I failed to regenerate my OAuth2 key.')
-
-
-    @commands.command(pass_context=True)
     async def add(self, ctx):
         """
         Add portable locations (Smiley+).
