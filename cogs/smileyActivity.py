@@ -37,10 +37,12 @@ class smileyActivity:
         rank = discord.utils.get(roles, id=config['rankRole'])
         admin = discord.utils.get(roles, id=config['adminRole'])
         leader = discord.utils.get(roles, id=config['leaderRole'])
+        adminChannel = bot.get_channel(config['adminChannel'])
         self.server = server
         self.rank = rank
         self.admin = admin
         self.leader = leader
+        self.adminChannel = adminChannel
 
     @commands.command(pass_context=True)
     async def smiley(self, ctx, *memberNames):
@@ -179,6 +181,7 @@ class smileyActivity:
             regen()
             sheet.insert_row(values, row)
         await self.bot.say(f'**{name}** has been added to the smileys sheet.')
+        await self.bot.send_message(self.adminChannel, f'**{name}**\'s has been added to the smileys sheet with status **Pending**.')
 
     @commands.command(pass_context=True)
     async def activatesmiley(self, ctx, name=""):
