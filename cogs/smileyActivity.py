@@ -181,7 +181,7 @@ class smileyActivity:
             regen()
             sheet.insert_row(values, row)
         await self.bot.say(f'**{name}** has been added to the smileys sheet.')
-        await self.bot.send_message(self.adminChannel, f'**{name}**\'s has been added to the smileys sheet with status **Pending**.')
+        await self.bot.send_message(self.adminChannel, f'**{name}** has been added to the smileys sheet with status **Pending**.')
 
     @commands.command(pass_context=True)
     async def activatesmiley(self, ctx, name=""):
