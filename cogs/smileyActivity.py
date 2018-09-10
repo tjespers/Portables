@@ -6,7 +6,6 @@ import sys
 sys.path.append('../')
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import re
 from main import addCommand
 from datetime import datetime, timedelta, timezone
 import copy
@@ -20,19 +19,7 @@ client = gspread.authorize(creds)
 
 sheet = client.open(config['sheetName']).get_worksheet(2)
 
-pattern = re.compile('[\W_]+')
-
 headerRows = 4
-
-def isName(memberName, member):
-    name = member.nick
-    if not name:
-        name = member.name
-    name = name.upper()
-    if memberName in pattern.sub('', name):
-        return True
-    else:
-        return False
 
 def regen():
     global creds
