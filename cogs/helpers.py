@@ -142,11 +142,5 @@ class helpers:
                     sheet.update_cell(row, creditCol, userName)
                 await self.bot.say(f'**{name}** has been noted as active for **{timestamp}**.')
 
-    @commands.command(pass_context=True)
-    async def test(self, ctx):
-        test = f'☆♡´･✿･`💜 Pippyspot 💜`･✿･´☆ﾐ'
-        test = re.sub('[^A-z0-9 -]', '', test).replace('`', '').strip()
-        print(test)
-
 def setup(bot):
     bot.add_cog(helpers(bot))
