@@ -77,10 +77,10 @@ class watchlist:
             return
         name = re.sub('[^A-z0-9 -]', '', name).replace('`', '').strip()
         if len(name) > 12:
-            await self.bot.say('Sorry, you can only add helpers with a valid RSN. RSNs have a maximum length of 12 characters.')
+            await self.bot.say('Sorry, you can only watchlist players with a valid RSN. RSNs have a maximum length of 12 characters.')
             return
         if re.match('^[A-z0-9 -]+$', name) is None:
-            await self.bot.say('Sorry, you can only add helpers with valid a RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            await self.bot.say('Sorry, you can only watchlist players with valid a RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
             return
         if not reasons:
             await self.bot.say(f'Please provide your reason for adding **{name}** to the watchlist.')
