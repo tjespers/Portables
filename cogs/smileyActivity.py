@@ -97,6 +97,7 @@ class smileyActivity:
         userName = user.nick
         if not userName:
             userName = user.name
+        userName = pattern.sub('', userName)
         for name in memberNames:
             row = 0
             for i, smiley in enumerate(smileys):
