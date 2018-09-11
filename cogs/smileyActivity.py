@@ -308,6 +308,7 @@ class smileyActivity:
         memberName = member.nick
         if not memberName:
             memberName = member.name
+        memberName = pattern.sub('', memberName)
         type = ''
         if member.top_role >= self.admin:
             type = 'Admin+ alt'
