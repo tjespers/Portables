@@ -87,7 +87,7 @@ class helpers:
         userName = user.nick
         if not userName:
             userName = user.name
-        userName = pattern.sub('', userName)
+        userName = re.sub('[^A-z0-9 -]', '', userName).replace('`', '')
         for name in names:
             if len(name) > 12:
                 await self.bot.say('Sorry, you can only add helpers with a valid RSN. RSNs have a maximum length of 12 characters.')

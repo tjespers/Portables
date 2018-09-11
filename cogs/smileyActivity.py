@@ -97,7 +97,7 @@ class smileyActivity:
         userName = user.nick
         if not userName:
             userName = user.name
-        userName = pattern.sub('', userName)
+        userName = re.sub('[^A-z0-9 -]', '', userName).replace('`', '')
         for name in memberNames:
             row = 0
             for i, smiley in enumerate(smileys):
@@ -308,7 +308,7 @@ class smileyActivity:
         memberName = member.nick
         if not memberName:
             memberName = member.name
-        memberName = pattern.sub('', memberName)
+        memberName = re.sub('[^A-z0-9 -]', '', memberName).replace('`', '')
         type = ''
         if member.top_role >= self.admin:
             type = 'Admin+ alt'
