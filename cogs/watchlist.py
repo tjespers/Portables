@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 import copy
 from dateutil.relativedelta import relativedelta
 import re
+import validators
 
 pattern = re.compile('[\W_]+')
 
@@ -84,6 +85,11 @@ class watchlist:
         if not reasons:
             await self.bot.say(f'Please provide your reason for adding **{name}** to the watchlist.')
             return
+        screenshot = ''
+        reasons = list(reasons)
+        if validators.url(reasons[len(reasons)-1]):
+            screenshot = reasons[len(reasons)-1]
+            del reasons[len(reasons)-1]
         reason = ""
         for i, r in enumerate(reasons):
             reason += r
@@ -108,7 +114,7 @@ class watchlist:
             if name.upper() == player.upper():
                 count += 1
         row = headerRows + len(watchlist) + 1
-        values = [name, timestamp, userName, reason]
+        values = [name, timestamp, userName, reason, screenshot]
         try:
             sheet.insert_row(values, row)
         except:
