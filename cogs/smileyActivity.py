@@ -164,6 +164,12 @@ class smileyActivity:
         if not name:
             await self.bot.say('Please add the name of the player you want to add to the smileys sheet.')
             return
+        if len(name) > 12:
+            await self.bot.say('Sorry, you can only add smileys with a valid RSN. RSNs have a maximum length of 12 characters.')
+            return
+        if re.match('^[A-z0-9 -]+$', name) is None:
+            await self.bot.say('Sorry, you can only add alts with valid a RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            return
         try:
             smileys = sheet.col_values(1)[headerRows:]
         except:
@@ -310,10 +316,10 @@ class smileyActivity:
             await self.bot.say(f'Sorry, I could not find the right rank for **{memberName}**, please check that this member is ranked.')
             return
         if len(name) > 12:
-            await self.bot.say('Sorry, you can only add alts with valid RSN. RSNs have a maximum length of 12 characters.')
+            await self.bot.say('Sorry, you can only add alts with a valid RSN. RSNs have a maximum length of 12 characters.')
             return
         if re.match('^[A-z0-9 -]+$', name) is None:
-            await self.bot.say('Sorry, you can only add alts with valid RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            await self.bot.say('Sorry, you can only add alts with a valid RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
             return
         try:
             smileys = sheet.col_values(1)[headerRows:]
