@@ -328,7 +328,7 @@ class updateLocs:
             name = user.nick
             if not name:
                 name = user.name
-            name = re.sub('[^A-z0-9 -]', '', name).replace('`', '')
+            name = re.sub('[^A-z0-9 -]', '', name).replace('`', '').strip()
 
         try:
             sheet.update_cell(21, col, newVal)
