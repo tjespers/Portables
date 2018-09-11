@@ -263,7 +263,7 @@ class smileyActivity:
     @commands.command(pass_context=True)
     async def addalt(self, ctx, name="", member=""):
         '''
-        Adds a smiley to the sheets (Admin+).
+        Adds a rank alt to the sheets (Admin+).
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
