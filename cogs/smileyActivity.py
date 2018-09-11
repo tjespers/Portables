@@ -118,10 +118,12 @@ class smileyActivity:
                 await self.bot.say(f'**{name}** is an alt account, you do not need to track its activity.')
                 continue
             for i in [7, 5, 3, 1]:
-                del activity[i]
-            for i in [3,2,1,0]:
-                if activity[i] is None or not activity[i]:
+                if len(activity) - 1 >= i:
                     del activity[i]
+            for i in [3,2,1,0]:
+                if len(activity) - 1 >= i:
+                    if activity[i] is None or not activity[i]:
+                        del activity[i]
             if timestamp in activity:
                 await self.bot.say(f'Sorry, **{name}** has already been noted as active today.')
                 continue
