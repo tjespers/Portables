@@ -10,6 +10,9 @@ from main import addCommand
 from datetime import datetime, timedelta, timezone
 import copy
 from dateutil.relativedelta import relativedelta
+import re
+
+pattern = re.compile('[\W_]+')
 
 config = config_load()
 
@@ -29,17 +32,29 @@ def regen():
     client = gspread.authorize(creds)
     sheet = client.open(config['sheetName']).get_worksheet(2)
 
+def isName(memberName, member):
+    name = member.nick
+    if not name:
+        name = member.name
+    name = name.upper()
+    if memberName in pattern.sub('', name):
+        return True
+    else:
+        return False
+
 class smileyActivity:
     def __init__(self, bot):
         self.bot = bot
         server = bot.get_server(config['portablesServer'])
         roles = server.roles
         rank = discord.utils.get(roles, id=config['rankRole'])
+        mod = discord.utils.get(roles, id=config['modRole'])
         admin = discord.utils.get(roles, id=config['adminRole'])
         leader = discord.utils.get(roles, id=config['leaderRole'])
         adminChannel = bot.get_channel(config['adminChannel'])
         self.server = server
         self.rank = rank
+        self.mod = mod
         self.admin = admin
         self.leader = leader
         self.adminChannel = adminChannel
@@ -161,12 +176,13 @@ class smileyActivity:
                 break
         for smiley in currentSmileys:
             if name.upper() == smiley.upper():
-                await self.bot.say('**{name}** is already on the list of smileys.')
+                await self.bot.say(f'**{name}** is already on the list of smileys.')
                 return
         row = 0
         for i, smiley in enumerate(smileys):
             if name.upper() == smiley.upper():
                 row = i + headerRows + 1
+                break
         if row:
             try:
                 sheet.delete_row(row)
@@ -243,6 +259,108 @@ class smileyActivity:
             regen()
             sheet.update_cell(row, col, 'Active')
         await self.bot.say(f'**{name}**\'s status has been set to active.')
+
+    @commands.command(pass_context=True)
+    async def addalt(self, ctx, name="", member=""):
+        '''
+        Adds a smiley to the sheets (Admin+).
+        '''
+        await self.bot.send_typing(ctx.message.channel)
+        msg = ctx.message
+        user = msg.author
+        roles = user.roles
+        channel = msg.channel
+        server = msg.server
+        if server != self.server:
+            await self.bot.say('Sorry, this command can only be used in the Portables Discord server.')
+            return
+        isAdmin = False
+        for r in roles:
+            if r.id == self.admin.id or user.id == config['owner']:
+                isAdmin = True
+                break
+        if not isAdmin:
+            await self.bot.say('Sorry, this command can only be used by Admins.')
+            return
+        if not name:
+            await self.bot.say(f'Please add the name of the alt you want to add, e.g.: `{prefix[0]}addalt TestAlt @testUser`.')
+            return
+        if not member:
+            await self.bot.say(f'Please add the name of the rank whose alt you want to add, or mention them, e.g.: `{prefix[0]}addalt TestAlt @testUser`.')
+            return
+        if msg.mentions:
+            member = msg.mentions[0]
+        else:
+            memberName = pattern.sub('', member).upper()
+            member = discord.utils.find(lambda m: isName(memberName, m) and m.top_role >= self.rank, server.members)
+            if not member:
+                await self.bot.say(f'Sorry, I could not find a rank by the name **{memberName}**.')
+                return
+        memberName = member.nick
+        if not memberName:
+            memberName = member.name
+        type = ''
+        if member.top_role >= self.admin:
+            type = 'Admin+ alt'
+        elif member.top_role >= self.mod:
+            type = 'Moderator alt'
+        elif member.top_role >= self.rank:
+            type = 'Rank alt'
+        else:
+            await self.bot.say(f'Sorry, I could not find the right rank for **{memberName}**, please check that this member is ranked.')
+            return
+        if len(name) > 12:
+            await self.bot.say('Sorry, you can only add alts with valid RSN. RSNs have a maximum length of 12 characters.')
+            return
+        if re.match('^[A-z0-9 -]+$', name) is None:
+            await self.bot.say('Sorry, you can only add alts with valid RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            return
+        try:
+            smileys = sheet.col_values(1)[headerRows:]
+            types = sheet.col_values(2)[headerRows:]
+        except:
+            regen()
+            smileys = sheet.col_values(1)[headerRows:]
+            types = sheet.col_values(2)[headerRows:]
+        currentSmileys = []
+        for i, smiley in enumerate(smileys):
+            if not smiley:
+                currentSmileys = smileys[:i]
+                types = types[:i]
+                break
+        for smiley in currentSmileys:
+            if name.upper() == smiley.upper():
+                await self.bot.say(f'**{name}** is already on the list of smileys.')
+                return
+        row = 0
+        if 'Rank' in type:
+            for i, t in enumerate(types):
+                if not 'ALT' in t.upper():
+                    row = i + headerRows + 1
+                    break
+        elif 'Mod' in type:
+            for i, t in enumerate(types):
+                if not 'ADMIN' in t.upper() and not 'MODERATOR' in t.upper():
+                    row = i + headerRows + 1
+                    break
+        elif 'Admin' in type:
+            for i, t in enumerate(types):
+                if not 'ADMIN' in t.upper():
+                    row = i + headerRows + 1
+                    break
+        if not row:
+            await self.bot.say(f'Sorry, I encountered an error.')
+            return
+        timestamp = datetime.utcnow().strftime("%b %#d, %Y")
+        endTime = ''
+        values = [name, type, f'{memberName} alt', '', '', '', '', '', '', '', '', '', '', 'Pending', timestamp, endTime]
+        try:
+            sheet.insert_row(values, row)
+        except:
+            regen()
+            sheet.insert_row(values, row)
+        await self.bot.say(f'**{memberName}**\'s alt, **{name}**, has been added to the smileys sheet.')
+        await self.bot.send_message(self.adminChannel, f'**{memberName}**\'s alt, **{name}**, has been added to the smileys sheet with status **Pending**.')
 
 
 def setup(bot):
