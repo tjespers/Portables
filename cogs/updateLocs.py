@@ -211,7 +211,7 @@ class updateLocs:
         """
         Add portable locations (Smiley+).
         Arguments: portable, worlds, location, worlds, location, etc...
-        Constraints: Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
+        Constraints: This command can only be used in the locations channel. Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
         """
         addCommand()
         portables = self.server
@@ -348,15 +348,23 @@ class updateLocs:
                 sheet.update_cell(22, 5, name)
                 sheet.update_cell(39, 2, name)
 
-        await self.bot.say(f'The **{portable}** location\(s\) **{newPortsText}** have been added to the Portables sheet.')
-        return
+        multiple = False
+        if len(newPorts) > 1:
+            multiple = True
+        elif len(newPorts[0][0]) > 1:
+            multiple = True
+
+        if multiple:
+            await self.bot.say(f'The **{portable}** locations **{newPortsText}** have been added to the Portables sheet.')
+        else:
+            await self.bot.say(f'The **{portable}** location **{newPortsText}** has been added to the Portables sheet.')
 
     @commands.command(pass_context=True)
     async def remove(self, ctx):
         """
         Remove portable locations (Smiley+).
         Arguments: portable, worlds, location, worlds, location, etc...
-        Constraints: Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
+        Constraints: This command can only be used in the locations channel. Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
         """
         addCommand()
         portables = self.server
@@ -459,8 +467,16 @@ class updateLocs:
                 sheet.update_cell(22, 5, name)
                 sheet.update_cell(39, 2, name)
 
-        await self.bot.say(f'The **{portable}** location\(s\) **{oldPortsText}** have been removed from the Portables sheet.')
-        return
+        multiple = False
+        if len(oldPorts) > 1:
+            multiple = True
+        elif len(oldPorts[0][0]) > 1:
+            multiple = True
+
+        if multiple:
+            await self.bot.say(f'The **{portable}** locations **{oldPortsText}** have been removed from the Portables sheet.')
+        else:
+            await self.bot.say(f'The **{portable}** location **{oldPortsText}** has been removed from the Portables sheet.')
 
 def setup(bot):
     bot.add_cog(updateLocs(bot))
