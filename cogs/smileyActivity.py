@@ -220,9 +220,9 @@ class smileyActivity:
                 smileys = smileys[:i]
                 break
         row = 0
-        for smiley in smileys:
+        for i, smiley in enumerate(smileys):
             if name.upper() in smiley.upper():
-                row = i + headerRows
+                row = i + headerRows + 1
                 name = smiley
                 break
         if not row:
