@@ -168,7 +168,7 @@ class smileyActivity:
             await self.bot.say('Sorry, you can only add smileys with a valid RSN. RSNs have a maximum length of 12 characters.')
             return
         if re.match('^[A-z0-9 -]+$', name) is None:
-            await self.bot.say('Sorry, you can only add alts with valid a RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
+            await self.bot.say('Sorry, you can only add smileys with valid a RSN. RSNs can only contain alphanumeric characters, spaces, and hyphens.')
             return
         try:
             smileys = sheet.col_values(1)[headerRows:]
