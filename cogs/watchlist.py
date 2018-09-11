@@ -52,7 +52,7 @@ class watchlist:
     @commands.command(pass_context=True)
     async def watchlist(self, ctx, name="", *reasons):
         '''
-        Adds a helper, or notes activity for an existing helper (Rank+).
+        Adds a player to the watchlist (Rank+).
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
