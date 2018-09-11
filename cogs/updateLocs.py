@@ -210,6 +210,8 @@ class updateLocs:
     async def add(self, ctx):
         """
         Add portable locations (Smiley+).
+        Arguments: portable, worlds, location, worlds, location, etc...
+        Constraints: Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
         """
         addCommand()
         portables = self.server
@@ -353,6 +355,8 @@ class updateLocs:
     async def remove(self, ctx):
         """
         Remove portable locations (Smiley+).
+        Arguments: portable, worlds, location, worlds, location, etc...
+        Constraints: Only approved locations, and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
         """
         addCommand()
         portables = self.server

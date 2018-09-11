@@ -54,6 +54,9 @@ class watchlist:
     async def watchlist(self, ctx, name="", *reasons):
         '''
         Adds a player to the watchlist (Rank+).
+        Arguments: name, reason, screenshot (optional).
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
+        Constraints: name must be a valid RSN.
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message

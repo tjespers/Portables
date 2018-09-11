@@ -38,6 +38,9 @@ class ModCommands:
     async def kick(self, ctx, *memberNames):
         '''
         Kicks the given user(s) (Admin+).
+        Arguments: name, name_2 (optional), etc...
+        Optionally, you can use mentions instead of names.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -85,6 +88,9 @@ class ModCommands:
     async def ban(self, ctx, *memberNames):
         '''
         Bans the given user(s) (Admin+).
+        Arguments: name, name_2 (optional), etc...
+        Optionally, you can use mentions instead of names.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -132,6 +138,8 @@ class ModCommands:
     async def purge(self, ctx, num=0):
         '''
         Deletes given amount of messages (Admin+).
+        Arguments: integer.
+        Constraints: You can delete up to 100 messages at a time.
         '''
         addCommand()
         msg = ctx.message
@@ -157,6 +165,9 @@ class ModCommands:
     async def role(self, ctx, roleName="", *memberNames):
         '''
         Toggles the given role for the given user(s) (Admin+).
+        Arguments: role, members
+        Members can be either name or mentions.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -227,6 +238,9 @@ class ModCommands:
     async def promote(self, ctx, *memberNames):
         '''
         Promotes the given user(s) (Admin+).
+        Arguments: members
+        Members can be either name or mentions.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -307,6 +321,9 @@ class ModCommands:
     async def demote(self, ctx, *memberNames):
         '''
         Demotes the given user(s) (Admin+).
+        Arguments: members
+        Members can be either name or mentions.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -394,6 +411,9 @@ class ModCommands:
     async def derank(self, ctx, *memberNames):
         '''
         Deranks the given user(s) (Admin+).
+        Arguments: members
+        Members can be either name or mentions.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         addCommand()
         msg = ctx.message
@@ -487,6 +507,7 @@ class ModCommands:
     async def mentionable(self, ctx, roleName=""):
         '''
         Toggles mentionable for the given role (Admin+).
+        Arguments: role
         '''
         addCommand()
         msg = ctx.message
@@ -535,6 +556,8 @@ class ModCommands:
     async def accept(self, ctx):
         '''
         Accepts a smiley application (Admin+).
+        Arguments: mention
+        Constraints: Can only be used in the applications channel.
         '''
         addCommand()
         portables = self.server
@@ -583,6 +606,8 @@ class ModCommands:
     async def decline(self, ctx):
         '''
         Declines a smiley application (Admin+).
+        Arguments: mention
+        Constraints: Can only be used in the applications channel.
         '''
         addCommand()
         portables = self.server
@@ -625,6 +650,7 @@ class ModCommands:
     async def rolecolour(self, ctx, roleName="", colour=""):
         '''
         Changes the colour of the given role to the given colour (Admin+).
+        Arguments: role, #hexcode
         '''
         addCommand()
         if not roleName or not colour:

@@ -53,6 +53,8 @@ class helpers:
     async def helper(self, ctx, *names):
         '''
         Adds a helper, or notes activity for an existing helper (Rank+).
+        Arguments: name, name_2 (optional), etc...
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message

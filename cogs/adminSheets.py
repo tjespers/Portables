@@ -46,6 +46,8 @@ class adminSheets:
     async def activity(self, ctx, *rankNames):
         '''
         Notes rank activity on admin sheets (Admin+).
+        Arguments: names
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
@@ -126,6 +128,9 @@ class adminSheets:
     async def sheetactivity(self, ctx, *rankNames):
         '''
         Notes rank sheet activity on admin sheets (Admin+).
+        Arguments: names
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
+        Also notes FC activity.
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message

@@ -98,6 +98,7 @@ class Management:
     async def say(self, ctx):
         '''
         Makes the bot say something (Leader+).
+        Arguments: channel_mention, message
         '''
         addCommand()
         user = ctx.message.author

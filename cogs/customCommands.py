@@ -141,6 +141,8 @@ class CustomCommands:
     async def rank(self, ctx, rank=""):
         '''
         Toggles the given rank.
+        Arguments: rank
+        Constraints: You can only assign yourself the ranks shown in the roles channel.
         '''
         addCommand()
         if not rank:
@@ -184,6 +186,9 @@ class CustomCommands:
     async def setnick(self, ctx):
         '''
         Changes the user's nickname.
+        Arguments: nickname
+        If no nickname is given, your nickname will be removed.
+        Constraints: nickname must be a valid RSN
         '''
         msg = ctx.message
         user = msg.author

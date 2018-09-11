@@ -63,6 +63,8 @@ class smileyActivity:
     async def smileyactivity(self, ctx, *memberNames):
         '''
         Notes activity for a smiley on sheets (Rank+).
+        Arguments: name, name_2 (optional), etc...
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
@@ -146,6 +148,9 @@ class smileyActivity:
     async def addsmiley(self, ctx, name=""):
         '''
         Adds a smiley to the sheets (Admin+).
+        Arguments: name.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
+        Constraints: name must be a valid RSN.
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
@@ -214,6 +219,8 @@ class smileyActivity:
     async def activatesmiley(self, ctx, name=""):
         '''
         Sets smiley status to active (Leader+).
+        Arguments: name.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
@@ -273,6 +280,10 @@ class smileyActivity:
     async def addalt(self, ctx, name="", member=""):
         '''
         Adds a rank alt to the sheets (Admin+).
+        Arguments: name, member.
+        Member can be either a name or a mention.
+        Surround names containing spaces with quotation marks, e.g.: "name with spaces".
+        Constraints: name must be a valid RSN, member must be a rank.
         '''
         await self.bot.send_typing(ctx.message.channel)
         msg = ctx.message
