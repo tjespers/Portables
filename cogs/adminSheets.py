@@ -82,7 +82,7 @@ class adminSheets:
         except:
             regen()
             sheetMonth = sheet.cell(3, 1).value
-        if month != sheetMonth:
+        if month.upper() != sheetMonth.upper().strip():
             await self.bot.say(f'Sorry, the admin sheets have not been updated to the current month yet. Please wait for a Leader to finish doing upkeep.')
             return
         try:
