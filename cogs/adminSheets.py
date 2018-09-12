@@ -29,7 +29,7 @@ def regen():
     global sheet
     creds = ServiceAccountCredentials.from_json_keyfile_name('data/gspread.json', scope)
     client = gspread.authorize(creds)
-    sheet = client.open(config['sheetName']).get_worksheet(2)
+    sheet = client.open(config['adminSheetName']).get_worksheet(1)
 
 class adminSheets:
     def __init__(self, bot):
@@ -82,7 +82,8 @@ class adminSheets:
         except:
             regen()
             sheetMonth = sheet.cell(3, 1).value
-        if month.upper() != sheetMonth.upper().strip():
+        if month.upper().strip() != sheetMonth.upper().strip():
+            print(f'Month: {month}, sheetMonth: {sheetMonth}')
             await self.bot.say(f'Sorry, the admin sheets have not been updated to the current month yet. Please wait for a Leader to finish doing upkeep.')
             return
         try:
