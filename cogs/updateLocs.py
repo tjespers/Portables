@@ -539,10 +539,6 @@ class updateLocs:
             await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
             return
 
-        if not user == self.chatty:
-            await self.bot.say(f'Sorry, this command is currently being developed and can only be used by Chatty for testing.')
-            return
-
         input = getInput(msg)
         if not input:
             await self.bot.say(f'Please add one or more worlds and locations to your command. Example: `{prefix[0]}fletch 100 ca`.')
