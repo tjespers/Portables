@@ -59,7 +59,7 @@ class smileyActivity:
         self.leader = leader
         self.adminChannel = adminChannel
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['smiley', 'smileyactive', 'smileyact'])
     async def smileyactivity(self, ctx, *memberNames):
         '''
         Notes activity for a smiley on sheets (Rank+).
@@ -144,7 +144,7 @@ class smileyActivity:
                 sheet.update_cell(row, creditCol, userName)
             await self.bot.say(f'**{name}** has been noted as active for **{timestamp}**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['addsmile'])
     async def addsmiley(self, ctx, name=""):
         '''
         Adds a smiley to the sheets (Admin+).
@@ -215,7 +215,7 @@ class smileyActivity:
         await self.bot.say(f'**{name}** has been added to the smileys sheet.')
         await self.bot.send_message(self.adminChannel, f'**{name}** has been added to the smileys sheet with status **Pending**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['activatesmile'])
     async def activatesmiley(self, ctx, name=""):
         '''
         Sets smiley status to active (Leader+).

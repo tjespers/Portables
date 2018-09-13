@@ -155,7 +155,7 @@ class DNDCommands:
             msg += "\nStock will refresh soon!" if tweetTime.day != now.day else "\nStock will refresh in " + timeToMerchant + "."
             await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['warband'])
     async def warbands(self, ctx):
         '''
         Returns the time until wilderness warbands starts.
@@ -176,7 +176,7 @@ class DNDCommands:
         msg = config['warbandsEmoji'] + " **Wilderness warbands** will begin in " + timeToWarband + "."
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['caches', 'guthix'])
     async def cache(self, ctx):
         '''
         Returns the time until the next Guthixian cache.
@@ -189,7 +189,7 @@ class DNDCommands:
         msg = config['cacheEmoji'] + " **Guthixian caches** will begin in " + timeToCache + "."
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['yew'])
     async def yews(self, ctx):
         '''
         Returns the time until the next divine yews event.
@@ -204,7 +204,7 @@ class DNDCommands:
         msg = config['yewsEmoji'] + " **Divine yews** will begin in " + timeToYews48 + " in w48 bu, and in " + timeToYews140 + " in w140 bu."
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['goebie', 'goebiebands'])
     async def goebies(self, ctx):
         '''
         Returns the time until the next goebies supply run.
@@ -217,7 +217,7 @@ class DNDCommands:
         msg = config['goebiesEmoji'] + " **Goebies supply run** will begin in " + timeToGoebies + "."
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['sinkholes'])
     async def sinkhole(self, ctx):
         '''
         Returns the time until the next sinkhole.
@@ -230,7 +230,7 @@ class DNDCommands:
         msg = config['sinkholeEmoji'] + " **Sinkhole** will spawn in " + timeToSinkhole + "."
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['minigame', 'minigames'])
     async def spotlight(self, ctx):
         '''
         Returns the current and next minigame spotlight.

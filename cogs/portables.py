@@ -92,7 +92,7 @@ class Portables:
         self.locChannel = bot.get_channel(config['locChannel'])
         self.start_time = datetime.utcnow()
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['portable'])
     async def portables(self, ctx):
         """
         A command to get the current portable locations.

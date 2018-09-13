@@ -42,7 +42,7 @@ class adminSheets:
         self.admin = admin
         self.leader = leader
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['act', 'active'])
     async def activity(self, ctx, *rankNames):
         '''
         Notes rank activity on admin sheets (Admin+).
@@ -124,7 +124,7 @@ class adminSheets:
                 sheet.update_cell(row, col, timestamp)
             await self.bot.say(f'**{name}** has been noted as active for **{timestamp}** **{datetime.utcnow().strftime("%b")}**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['sheetactive', 'sheetact', 'shact', 'shactive', 'shactivity'])
     async def sheetactivity(self, ctx, *rankNames):
         '''
         Notes rank sheet activity on admin sheets (Admin+).

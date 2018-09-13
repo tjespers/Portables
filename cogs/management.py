@@ -39,7 +39,7 @@ class Management:
         server = bot.get_server(config['portablesServer'])
         self.server = server
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['test'])
     async def status(self, ctx):
         '''
         Returns the bot's current status.
@@ -74,7 +74,7 @@ class Management:
         await self.bot.edit_message(msg, embed=embed)
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['reboot', 'reload', 'shutdown'])
     async def restart(self, ctx):
         '''
         Restarts the bot (Leader+).
@@ -94,7 +94,7 @@ class Management:
             await self.bot.say('OK, restarting...')
             restart()
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['talk', 'type', 'message', 'msg'])
     async def say(self, ctx):
         '''
         Makes the bot say something (Leader+).
@@ -131,7 +131,7 @@ class Management:
             await self.bot.say(f'Sorry, I do not have permission to send a message to {channel.mention}.')
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['logging'])
     async def log(self, ctx):
         '''
         Toggles logging (Leader+).

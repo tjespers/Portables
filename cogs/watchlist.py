@@ -50,7 +50,7 @@ class watchlist:
         self.leader = leader
         self.adminChannel = adminChannel
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['watch'])
     async def watchlist(self, ctx, name="", *reasons):
         '''
         Adds a player to the watchlist (Rank+).

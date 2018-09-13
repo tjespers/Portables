@@ -134,7 +134,7 @@ class ModCommands:
             except discord.Forbidden:
                 await self.bot.say(f'Sorry, I do not have permission to ban **{member.name}**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['delete', 'clear'])
     async def purge(self, ctx, num=0):
         '''
         Deletes given amount of messages (Admin+).
@@ -234,7 +234,7 @@ class ModCommands:
                 except discord.Forbidden:
                     await self.bot.say(f'Sorry, I do not have permission to add the role **{role.name}** to **{member.name}**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['promo'])
     async def promote(self, ctx, *memberNames):
         '''
         Promotes the given user(s) (Admin+).
@@ -317,7 +317,7 @@ class ModCommands:
             await self.bot.say(txt)
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['demo'])
     async def demote(self, ctx, *memberNames):
         '''
         Demotes the given user(s) (Admin+).
@@ -503,7 +503,7 @@ class ModCommands:
             await self.bot.say(txt)
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['mention'])
     async def mentionable(self, ctx, roleName=""):
         '''
         Toggles mentionable for the given role (Admin+).
@@ -602,7 +602,7 @@ class ModCommands:
         await self.bot.send_message(adminChannel, f'**{author.name}** has accepted **{name}**\'s smiley application.')
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['reject'])
     async def decline(self, ctx):
         '''
         Declines a smiley application (Admin+).
@@ -646,7 +646,7 @@ class ModCommands:
         await self.bot.send_message(adminChannel, f'**{author.name}** has declined **{name}**\'s smiley application.')
         return
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['rolecolor', 'colour', 'color'])
     async def rolecolour(self, ctx, roleName="", colour=""):
         '''
         Changes the colour of the given role to the given colour (Admin+).

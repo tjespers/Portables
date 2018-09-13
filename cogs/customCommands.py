@@ -48,7 +48,7 @@ class CustomCommands:
         self.server = server
         self.roleChannel = bot.get_channel(config['roleChannel'])
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['latency', 'delay'])
     async def ping(self, ctx):
         '''
         Pings the bot to check latency.
@@ -60,7 +60,7 @@ class CustomCommands:
         await self.bot.edit_message(msg, f'Pong! `{ping}`')
 
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['port'])
     async def ports(self, ctx):
         '''
         Explains how to get portable locations.
@@ -70,7 +70,7 @@ class CustomCommands:
         botChannel = config['botChannel']
         await self.bot.say(f'For a list of portable locations, please use the `{prefix[0]}portables` command in the <#{botChannel}> channel.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['invite'])
     async def discord(self, ctx):
         '''
         Gives the link for the Portables discord server.
@@ -78,7 +78,7 @@ class CustomCommands:
         addCommand()
         await self.bot.say(f'**Portables Discord:**\nhttps://discord.gg/QhBCYYr')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['abb', 'abbrev', 'abbreviation', 'abbreviations'])
     async def abbr(self, ctx):
         '''
         Explains all abbreviations.
@@ -105,7 +105,7 @@ class CustomCommands:
                f'• VIP = Menaphos VIP skilling area')
         await self.bot.say(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['sheet'])
     async def sheets(self, ctx):
         '''
         Gives the link to the public Portables sheet.
@@ -113,7 +113,7 @@ class CustomCommands:
         addCommand()
         await self.bot.say(f'**Portables sheets:**\nhttps://docs.google.com/spreadsheets/d/16Yp-eLHQtgY05q6WBYA2MDyvQPmZ4Yr3RHYiBCBj2Hc/pub')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['forum'])
     async def forums(self, ctx):
         '''
         Gives the link to the Portables forum thread.
@@ -129,7 +129,7 @@ class CustomCommands:
         addCommand()
         await self.bot.say(f'**Portables Twitter:**\nhttps://www.twitter.com/PortablesRS')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['reddit'])
     async def dxp(self, ctx):
         '''
         Gives the Reddit link DXP info.
@@ -182,7 +182,7 @@ class CustomCommands:
             await self.bot.remove_roles(user, role)
             await self.bot.say(f'{user.mention}, you left **{role.name}**.')
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['changenick', 'nick', 'name', 'setname', 'changename'])
     async def setnick(self, ctx):
         '''
         Changes the user's nickname.

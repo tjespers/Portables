@@ -49,7 +49,7 @@ class helpers:
         self.leader = leader
         self.adminChannel = adminChannel
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['help'])
     async def helper(self, ctx, *names):
         '''
         Adds a helper, or notes activity for an existing helper (Rank+).
