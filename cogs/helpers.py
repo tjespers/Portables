@@ -119,7 +119,6 @@ class helpers:
                 except:
                     regen()
                     activity = sheet.row_values(row)[2:8]
-                print(str(activity))
                 for i in [5, 3, 1]:
                     if len(activity) - 1 >= i:
                         del activity[i]
