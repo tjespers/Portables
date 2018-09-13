@@ -21,6 +21,7 @@ sheet = client.open(config['sheetName']).sheet1
 
 locations = ["CA", "LC", "BA", "SP", "BU", "CW", "PRIF", "MG", "VIP", "GE", "MEI", "TRA", "POF"]
 portablesNames = ['Fletcher', 'Crafter', 'Brazier', 'Sawmill', 'Forge', 'Range', 'Well']
+portablesNamesUpper = ['FLETCHERS', 'CRAFTERS', 'BRAZIERS', 'SAWMILLS', 'FORGES', 'RANGES', 'WELLS']
 locs = 'CA, LC, BA, SP, BU, CW, PRIF, MG, VIP, GE, MEI, TRA, POF'
 busyLocs = [[84, "CA"], [99, "CA"], [100, "SP"]]
 forbiddenLocs = [[2, "BU"]]
@@ -28,6 +29,14 @@ highestWorld = 141
 forbiddenWorlds = [18, 33, 47, 55, 75, 90, 93, 94, 95, 97, 101, 102, 106, 107, 109, 110, 111, 112, 113, 118, 121, 122, 125, 126, 127, 128, 129, 130, 131, 132, 133]
 f2pWorlds = [3, 7, 8, 11, 17, 19, 20, 29, 33, 34, 38, 41, 43, 57, 61, 80, 81, 108, 120, 135, 136, 141]
 totalWorlds = [[86, " (1500+)"], [114, " (1500+)"], [30, " (2000+)"], [48, " (2600+)"]]
+
+aliases = ['fletchers', 'fletcher', 'fletch', 'fl',
+           'crafters', 'crafter', 'craft', 'cr', 'c',
+           'braziers', 'brazier', 'braz', 'br', 'b',
+           'sawmills', 'sawmill', 'saw', 'sa', 's', 'mill', 'mi', 'm',
+           'forges', 'forge', 'fo',
+           'ranges', 'range', 'ra', 'r',
+           'wells', 'well', 'we', 'w']
 
 def regen():
     global creds
@@ -192,6 +201,104 @@ def format(ports):
 
     return txt
 
+def updateSheet(col, newVal, timestamp, name, isRank):
+    try:
+        sheet.update_cell(21, col, newVal)
+        sheet.update_cell(31+col, 2, newVal)
+        sheet.update_cell(22, 3, timestamp)
+        if isRank:
+            sheet.update_cell(22, 5, name)
+            sheet.update_cell(39, 2, name)
+    except:
+        regen()
+        sheet.update_cell(21, col, newVal)
+        sheet.update_cell(31+col, 2, newVal)
+        sheet.update_cell(22, 3, timestamp)
+        if isRank:
+            sheet.update_cell(22, 5, name)
+            sheet.update_cell(39, 2, name)
+
+def getUserName(user):
+    name = user.nick
+    if not name:
+        name = user.name
+    name = re.sub('[^A-z0-9 -]', '', name).replace('`', '').strip()
+    return name
+
+def getInput(msg):
+    input = msg.content
+    input = input.replace(prefix[0], '')
+    input = input.replace('edit', '')
+    input = input.upper()
+    input = input.replace('F2P', '').strip()
+    return input
+
+def getPortable(input):
+    index = input.find(' ')
+    command = input[:index]
+    portable = ''
+    col = 0
+    for i, port in enumerate(portablesNamesUpper):
+        if port.startswith(command):
+            portable = port[:len(port)-1].lower()
+            col = i+1
+            break
+    if not portable:
+        for i, port in enumerate(portablesNamesUpper):
+            if command in port:
+                portable = port[:len(port)-1].lower()
+                col = i+1
+                break
+    input = input.replace(command, '', 1).strip()
+    return [input, portable, col]
+
+def getPortRow():
+    try:
+        ports = sheet.row_values(21)[:7]
+    except:
+        regen()
+        ports = sheet.row_values(21)[:7]
+    return ports
+
+def checkPorts(newPorts, ports):
+    for port in newPorts:
+        loc = port[1]
+        for world in port[0]:
+            if world < 1 or world > highestWorld:
+                return f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.'
+            if world in forbiddenWorlds:
+                return f'Sorry, world **{str(world)}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.'
+            for forbiddenLoc in forbiddenLocs:
+                if world == forbiddenLoc[0] and loc == forbiddenLoc[1]:
+                    return f'Sorry, **{str(world)} {loc}** is a forbidden location.'
+            if loc == 'GE' and world not in f2pWorlds:
+                return 'Sorry, we only call the location **GE** in F2P worlds.'
+            portNames = []
+            count = 0
+            i = 0
+            for p in ports:
+                i += 1
+                p = getPorts(p)
+                for entry in p:
+                    if loc != entry[1]:
+                        continue
+                    if world in entry[0]:
+                        portNames.append(portablesNames[i-1])
+                        count += 1
+                        break
+            if count >= 3:
+                msgPorts = ""
+                i = 0
+                for p in portNames:
+                    i += 1
+                    msgPorts += '**' + p + '**'
+                    if i < len(portNames):
+                        msgPorts += ", "
+                        if i == len(portNames) - 1:
+                            msgPorts += "and "
+                return f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{str(world)} {loc}** already has a {msgPorts}.'
+    return ''
+
 
 class updateLocs:
     def __init__(self, bot):
@@ -201,10 +308,12 @@ class updateLocs:
         roles = server.roles
         smiley = discord.utils.get(roles, id=config['smileyRole'])
         rank = discord.utils.get(roles, id=config['rankRole'])
+        chatty = discord.utils.get(server.members, id=config['owner'])
         self.server = server
         self.channel = channel
         self.smiley = smiley
         self.rank = rank
+        self.chatty = chatty
 
     @commands.command(pass_context=True)
     async def add(self, ctx):
@@ -477,6 +586,83 @@ class updateLocs:
             await self.bot.say(f'The **{portable}** locations **{oldPortsText}** have been removed from the Portables sheet.')
         else:
             await self.bot.say(f'The **{portable}** location **{oldPortsText}** has been removed from the Portables sheet.')
+
+
+    @commands.command(pass_context=True, aliases=aliases)
+    async def edit(self, ctx):
+        '''
+        Edit portable locations (Smiley+).
+        Arguments: portable, worlds, location, worlds, location, etc...
+        Alternatively, you can directly use -portable [arguments], e.g.: -fletch 100 ca
+        Constraints: This command can only be used in the locations channel. Only approved locations and worlds are allowed. Additionally, worlds must be a valid world. No more than 3 portables per location.
+        '''
+        addCommand()
+        portables = self.server
+        locChannel = self.channel
+        msg = ctx.message
+        if msg.server != portables:
+            await self.bot.say(f'Sorry, this command can only be used in the Portables server:\nhttps://discord.gg/QhBCYYr')
+            return
+        if msg.channel != locChannel:
+            await self.bot.say(f'Sorry, this command can only be used in the channel <#{locChannel.id}>.')
+            return
+        smiley = self.smiley
+        user = ctx.message.author
+        role = user.top_role
+        if not role >= smiley:
+            await self.bot.say(f'Sorry, only Smileys and above have permission to use this command.')
+            return
+
+        if not user == self.chatty:
+            await self.bot.say(f'Sorry, this command is currently being developed and can only be used by Chatty for testing.')
+            return
+
+        input = getInput(msg)
+        if not input:
+            await self.bot.say(f'Please add one or more worlds and locations to your command. Example: `{prefix[0]}fletch 100 ca`.')
+            return
+
+        getPortableResult = getPortable(input)
+        input = getPortableResult[0]
+        portable = getPortableResult[1]
+        col = getPortableResult[2]
+
+        if not portable:
+            await self.bot.say(f'Sorry, your command did not contain a valid portable. Please choose one of the following: fletcher, crafter, brazier, sawmill, forge, range, well.')
+            return
+
+        name = ''
+        isRank = False
+        if self.rank in user.roles:
+            isRank = True
+            name = getUserName(user)
+
+        timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
+
+        if input.replace('/', '') in ['NA', 'NO', 'NONE', '0', 'ZERO']:
+            updateSheet(col, 'N/A', timestamp, name, isRank)
+            await self.bot.say(f'The **{portable}** locations have been edited to: **N/A**.')
+            return
+
+        newPorts = getPorts(input)
+        if not newPorts:
+            await self.bot.say(f'Sorry, your command did not contain any valid locations.')
+            return
+
+        ports = getPortRow()
+        ports[col-1] = ""
+
+        error = checkPorts(newPorts, ports)
+        if error:
+            await self.bot.say(error)
+            return
+
+        newPortsText = format(newPorts).replace('*', '\*')
+        newVal = format(newPorts)
+
+        updateSheet(col, newVal, timestamp, name, isRank)
+
+        await self.bot.say(f'The **{portable}** locations have been edited to: **{newPortsText}**.')
 
 def setup(bot):
     bot.add_cog(updateLocs(bot))
