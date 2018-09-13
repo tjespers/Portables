@@ -375,56 +375,15 @@ class updateLocs:
             await self.bot.say(f'Sorry, your command did not contain any valid locations.')
             return
 
-        try:
-            ports = sheet.row_values(21)[:7]
-        except:
-            regen()
-            ports = sheet.row_values(21)[:7]
+        ports = getPortRow()
 
         val = ports[col-1]
         ports[col-1] = ""
 
-        for port in newPorts:
-            loc = port[1]
-            for world in port[0]:
-                if world < 1 or world > highestWorld:
-                    await self.bot.say(f'Sorry, **{str(world)}** is not a valid world. Please enter a number between 1 and 141.')
-                    return
-                if world in forbiddenWorlds:
-                    await self.bot.say(f'Sorry, world **{str(world)}** is not called because it is either a pking world or a bounty hunter world, or it is not on the world list.')
-                    return
-                for forbiddenLoc in forbiddenLocs:
-                    if world == forbiddenLoc[0] and loc == forbiddenLoc[1]:
-                        await self.bot.say(f'Sorry, **{str(world)} {loc}** is a forbidden location.')
-                        return
-                if loc == 'GE' and world not in f2pWorlds:
-                    await self.bot.say('Sorry, we only call the location **GE** in F2P worlds.')
-                    return
-                portNames = []
-                count = 0
-                i = 0
-                for p in ports:
-                    i += 1
-                    p = getPorts(p)
-                    for entry in p:
-                        if loc != entry[1]:
-                            continue
-                        if world in entry[0]:
-                            portNames.append(portablesNames[i-1])
-                            count += 1
-                            break
-                if count >= 3:
-                    msgPorts = ""
-                    i = 0
-                    for p in portNames:
-                        i += 1
-                        msgPorts += '**' + p + '**'
-                        if i < len(portNames):
-                            msgPorts += ", "
-                            if i == len(portNames) - 1:
-                                msgPorts += "and "
-                    await self.bot.say(f'Sorry, there cannot be more than 3 portables at the same location.\nThe location **{str(world)} {loc}** already has a {msgPorts}.')
-                    return
+        error = checkPorts(newPorts, ports)
+        if error:
+            await self.bot.say(error)
+            return
 
         newPortsText = format(newPorts).replace('*', '\*')
         currentPorts = getPorts(val)
@@ -434,28 +393,12 @@ class updateLocs:
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
         isRank = False
+        name = ''
         if self.rank in user.roles:
             isRank = True
-            name = user.nick
-            if not name:
-                name = user.name
-            name = re.sub('[^A-z0-9 -]', '', name).replace('`', '').strip()
+            name = getUserName(user)
 
-        try:
-            sheet.update_cell(21, col, newVal)
-            sheet.update_cell(31+col, 2, newVal)
-            sheet.update_cell(22, 3, timestamp)
-            if isRank:
-                sheet.update_cell(22, 5, name)
-                sheet.update_cell(39, 2, name)
-        except:
-            regen()
-            sheet.update_cell(21, col, newVal)
-            sheet.update_cell(31+col, 2, newVal)
-            sheet.update_cell(22, 3, timestamp)
-            if isRank:
-                sheet.update_cell(22, 5, name)
-                sheet.update_cell(39, 2, name)
+        updateSheet(col, newVal, timestamp, name, isRank)
 
         multiple = False
         if len(newPorts) > 1:
@@ -551,30 +494,13 @@ class updateLocs:
 
         timestamp = datetime.utcnow().strftime("%#d %b, %#H:%M")
 
+        name = ''
         isRank = False
         if self.rank in user.roles:
             isRank = True
-            name = user.nick
-            if not name:
-                name = user.name
-            name = re.sub('[^A-z0-9 -]', '', name)
-            name = name.replace('`', '')
+            name = getUserName(user)
 
-        try:
-            sheet.update_cell(21, col, newVal)
-            sheet.update_cell(31+col, 2, newVal)
-            sheet.update_cell(22, 3, timestamp)
-            if isRank:
-                sheet.update_cell(22, 5, name)
-                sheet.update_cell(39, 2, name)
-        except:
-            regen()
-            sheet.update_cell(21, col, newVal)
-            sheet.update_cell(31+col, 2, newVal)
-            sheet.update_cell(22, 3, timestamp)
-            if isRank:
-                sheet.update_cell(22, 5, name)
-                sheet.update_cell(39, 2, name)
+        updateSheet(col, newVal, timestamp, name, isRank)
 
         multiple = False
         if len(oldPorts) > 1:
